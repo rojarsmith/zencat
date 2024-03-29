@@ -6,3 +6,9 @@ Support:
 
 - Boot Loader, IAP
 - CMake
+
+## experiment/cmake-template
+
+CMake template support STM32CubeIDE
+
+Import --> Existing Projects into Workspace --> `experiment/cmake-template`
