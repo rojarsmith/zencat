@@ -22,10 +22,10 @@
   #warning "FPU is not initialized, but the project is compiling for an FPU. Please initialize the FPU before use."
 #endif
 
-#define RCC_BASE    0x58024400
+#define RCC_BASE    0x40023800 //0x58024400
 #define RCC_CFGR    (volatile uint32_t*)(RCC_BASE + 0x10)
 
-#define HSI_FREQUENCY 64000000
+#define HSI_FREQUENCY 16000000 //64000000
 
 #define SYSTICK_BASE       0xE000E010
 #define SYSTICK_CTRL_PTR   (volatile uint32_t*)(SYSTICK_BASE + 0x00)
@@ -73,6 +73,7 @@ int main(void)
 
 	if(sysClockSource || sysClockFreq){}
 
+	// 10 seconds
 	for(int i = 1;i <= 100; i++){
 		SysTick_Delay_us(100);
 	}
