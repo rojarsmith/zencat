@@ -49,6 +49,7 @@ set (PROJECT_SOURCES
 	# LIST SOURCE FILES HERE
 	startup_stm32h747xihx.s
 	../../../application/src/main.c
+	../../../application/src/syscalls.c
 	)
 
 set (PROJECT_DEFINES
