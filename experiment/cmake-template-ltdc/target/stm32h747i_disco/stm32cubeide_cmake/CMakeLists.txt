@@ -47,9 +47,9 @@ set (RUNTIME_LIBRARY_SYSCALLS "--specs=nosys.specs")
 
 set (PROJECT_SOURCES
 	# LIST SOURCE FILES HERE
-	startup_stm32h747xihx.s
 	../../../application/src/main.c
 	../../../application/src/syscalls.c
+	startup_stm32h747xihx.s
 	)
 
 set (PROJECT_DEFINES
@@ -59,7 +59,9 @@ set (PROJECT_DEFINES
 
 set (PROJECT_INCLUDES
 	# LIST INCLUDE DIRECTORIES HERE
-
+	../../../application/inc
+    ../../../drivers/CMSIS/Device/ST/STM32H7xx/Include
+    ../../../drivers/CMSIS/Include
     )
 
 ############ MODIFY ACCORDING TO REQUIREMENTS) ########################
@@ -79,6 +81,10 @@ endif()
 
 add_compile_definitions (${PROJECT_DEFINES})
 include_directories (${PROJECT_INCLUDES})
+
+add_definitions(
+    -DCORE_CM7
+)
 
 set (CMAKE_EXECUTABLE_SUFFIX ".elf")
 set (CMAKE_STATIC_LIBRARY_SUFFIX ".a")

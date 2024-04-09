@@ -17,15 +17,16 @@
  */
 
 #include <stdint.h>
+#include "main.h"
 
 #if !defined(__SOFT_FP__) && defined(__ARM_FP)
   #warning "FPU is not initialized, but the project is compiling for an FPU. Please initialize the FPU before use."
 #endif
 
-#define RCC_BASE    0x40023800 //0x58024400
+//#define RCC_BASE    0x40023800 //0x58024400
 #define RCC_CFGR    (volatile uint32_t*)(RCC_BASE + 0x10)
 
-#define HSI_FREQUENCY 16000000 //64000000
+#define HSI_FREQUENCY 64000000 //H747I-DISCO 64000000  F746G-DISCO 16000000
 
 #define SYSTICK_BASE       0xE000E010
 #define SYSTICK_CTRL_PTR   (volatile uint32_t*)(SYSTICK_BASE + 0x00)

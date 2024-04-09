@@ -35,5 +35,10 @@
 			<type>2</type>
 			<locationURI>PARENT-3-PROJECT_LOC/application</locationURI>
 		</link>
+		<link>
+			<name>drivers</name>
+			<type>2</type>
+			<locationURI>PARENT-3-PROJECT_LOC/drivers</locationURI>
+		</link>
 	</linkedResources>
 </projectDescription>
