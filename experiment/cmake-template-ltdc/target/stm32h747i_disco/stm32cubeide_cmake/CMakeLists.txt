@@ -49,6 +49,7 @@ set (PROJECT_SOURCES
 	# LIST SOURCE FILES HERE
 	../../../application/src/main.c
 	../../../application/src/syscalls.c
+	../../../drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_cortex.c
 	startup_stm32h747xihx.s
 	)
 
@@ -60,8 +61,12 @@ set (PROJECT_DEFINES
 set (PROJECT_INCLUDES
 	# LIST INCLUDE DIRECTORIES HERE
 	../../../application/inc
+	../../../drivers/BSP/Components/is42s32800j
+	../../../drivers/BSP/STM32H747I-DISCO
     ../../../drivers/CMSIS/Device/ST/STM32H7xx/Include
     ../../../drivers/CMSIS/Include
+    ../../../drivers/STM32H7xx_HAL_Driver/Inc
+    ../../../drivers/STM32H7xx_HAL_Driver/Inc/Legacy
     )
 
 ############ MODIFY ACCORDING TO REQUIREMENTS) ########################
@@ -84,6 +89,7 @@ include_directories (${PROJECT_INCLUDES})
 
 add_definitions(
     -DCORE_CM7
+    -DSTM32H747xx
 )
 
 set (CMAKE_EXECUTABLE_SUFFIX ".elf")

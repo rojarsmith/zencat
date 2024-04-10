@@ -21,6 +21,9 @@
 #define __MAIN_H
 
 /* Includes ------------------------------------------------------------------*/
-#include "stm32h747xx.h"
+#include "stm32h7xx_hal.h"
+//#include "stm32h747xx.h"
+//#include "stm32h7xx_hal_cortex.h"
+#include "stm32h747i_discovery_sdram.h"
 
 #endif /* __MAIN_H */
