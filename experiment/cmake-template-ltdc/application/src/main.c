@@ -23,20 +23,20 @@
   #warning "FPU is not initialized, but the project is compiling for an FPU. Please initialize the FPU before use."
 #endif
 
-//#define RCC_BASE    0x40023800 //0x58024400
+//#define RCC_BASE    0x40023800 //H7 0x58024400
 #define RCC_CFGR    (volatile uint32_t*)(RCC_BASE + 0x10)
 
 #define HSI_FREQUENCY 64000000 //H747I-DISCO 64000000  F746G-DISCO 16000000
 
-#define SYSTICK_BASE       0xE000E010
-#define SYSTICK_CTRL_PTR   (volatile uint32_t*)(SYSTICK_BASE + 0x00)
-#define SYSTICK_LOAD_PTR   (volatile uint32_t*)(SYSTICK_BASE + 0x04)
-#define SYSTICK_VAL_PTR    (volatile uint32_t*)(SYSTICK_BASE + 0x08)
+#define SYSTICK_BASE       SysTick_BASE //H747I-DISCO 0xE000E010
+#define SYSTICK_CTRL_PTR   (volatile uint32_t*)(SYSTICK_BASE + 0x00) // 0x00
+#define SYSTICK_LOAD_PTR   (volatile uint32_t*)(SYSTICK_BASE + 0x04) // 0x04
+#define SYSTICK_VAL_PTR    (volatile uint32_t*)(SYSTICK_BASE + 0x08) // 0x08
 
-#define SYSTICK_COUNTFLAG  (1 << 16)
-#define SYSTICK_CLKSOURCE  (1 << 2)
-#define SYSTICK_TICKINT    (1 << 1)
-#define SYSTICK_ENABLE     (1 << 0)
+#define SYSTICK_COUNTFLAG  SysTick_CTRL_COUNTFLAG_Msk //H747I-DISCO (1 << 16)
+#define SYSTICK_CLKSOURCE  SysTick_CTRL_CLKSOURCE_Msk //H747I-DISCO (1 << 2)
+#define SYSTICK_TICKINT    SysTick_CTRL_TICKINT_Msk //H747I-DISCO (1 << 1)
+#define SYSTICK_ENABLE     SysTick_CTRL_ENABLE_Msk //H747I-DISCO (1 << 0)
 
 uint32_t sysClockFreq = 0;
 
@@ -67,7 +67,7 @@ int main(void)
 
 
     switch(sysClockSource) {
-        case 0: // HSI
+        case RCC_CFGR_SW_HSI: // HSI
             sysClockFreq = HSI_FREQUENCY;
             break;
     }
