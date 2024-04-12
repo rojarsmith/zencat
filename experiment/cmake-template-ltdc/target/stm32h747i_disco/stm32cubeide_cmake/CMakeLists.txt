@@ -48,8 +48,14 @@ set (RUNTIME_LIBRARY_SYSCALLS "--specs=nosys.specs")
 set (PROJECT_SOURCES
 	# LIST SOURCE FILES HERE
 	../../../application/src/main.c
+	../../../application/src/stm32h7xx_it.c
 	../../../application/src/syscalls.c
+    ../../../drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal.c
 	../../../drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_cortex.c
+	../../../drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_gpio.c
+    ../../../drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_rcc.c
+    ../../../drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_rcc_ex.c
+    ../../../target/common/system_stm32h7xx.c
 	startup_stm32h747xihx.s
 	)
 

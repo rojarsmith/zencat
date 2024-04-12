@@ -20,46 +20,26 @@
 #include "main.h"
 
 //#define RCC_BASE    0x40023800 //H7 0x58024400
-#define RCC_CFGR    (volatile uint32_t*)(RCC_BASE + 0x10)
-
-#define HSI_FREQUENCY 64000000 //H747I-DISCO 64000000  F746G-DISCO 16000000
-
-#define SYSTICK_BASE       SysTick_BASE //H747I-DISCO 0xE000E010
-#define SYSTICK_CTRL_PTR   (volatile uint32_t*)(SYSTICK_BASE + 0x00) // 0x00
-#define SYSTICK_LOAD_PTR   (volatile uint32_t*)(SYSTICK_BASE + 0x04) // 0x04
-#define SYSTICK_VAL_PTR    (volatile uint32_t*)(SYSTICK_BASE + 0x08) // 0x08
-
-#define SYSTICK_COUNTFLAG  SysTick_CTRL_COUNTFLAG_Msk //H747I-DISCO (1 << 16)
-#define SYSTICK_CLKSOURCE  SysTick_CTRL_CLKSOURCE_Msk //H747I-DISCO (1 << 2)
-#define SYSTICK_TICKINT    SysTick_CTRL_TICKINT_Msk //H747I-DISCO (1 << 1)
-#define SYSTICK_ENABLE     SysTick_CTRL_ENABLE_Msk //H747I-DISCO (1 << 0)
-
-uint32_t sysClockFreq = 0;
-
-void SysTick_Delay_us(uint32_t us) {
-	uint32_t tmp = 0;
-
-	uint32_t dddd = *SYSTICK_CTRL_PTR;
-	*SYSTICK_CTRL_PTR |= SYSTICK_CLKSOURCE; // Internal
-	uint32_t dddd2 = *SYSTICK_CTRL_PTR;
-	*SYSTICK_LOAD_PTR = sysClockFreq / 1000 * us;
-	uint32_t dddd3 = *SYSTICK_LOAD_PTR;
-	*SYSTICK_VAL_PTR = 0;
-	*SYSTICK_CTRL_PTR |= SYSTICK_ENABLE;
-
-	do {
-		tmp = *SYSTICK_CTRL_PTR;
-	} while (!(tmp & SYSTICK_COUNTFLAG));
-
-	*SYSTICK_CTRL_PTR &= ~SYSTICK_ENABLE;
-
-	if (tmp || dddd || dddd2 || dddd3) {
-	}
-}
+//#define RCC_CFGR    (volatile uint32_t*)(RCC_BASE + 0x10)
+//
+//#define HSI_FREQUENCY 64000000 //H747I-DISCO 64000000  F746G-DISCO 16000000
+//
+//#define SYSTICK_BASE       SysTick_BASE //H747I-DISCO 0xE000E010
+//#define SYSTICK_CTRL_PTR   (volatile uint32_t*)(SYSTICK_BASE + 0x00) // 0x00
+//#define SYSTICK_LOAD_PTR   (volatile uint32_t*)(SYSTICK_BASE + 0x04) // 0x04
+//#define SYSTICK_VAL_PTR    (volatile uint32_t*)(SYSTICK_BASE + 0x08) // 0x08
+//
+//#define SYSTICK_COUNTFLAG  SysTick_CTRL_COUNTFLAG_Msk //H747I-DISCO (1 << 16)
+//#define SYSTICK_CLKSOURCE  SysTick_CTRL_CLKSOURCE_Msk //H747I-DISCO (1 << 2)
+//#define SYSTICK_TICKINT    SysTick_CTRL_TICKINT_Msk //H747I-DISCO (1 << 1)
+//#define SYSTICK_ENABLE     SysTick_CTRL_ENABLE_Msk //H747I-DISCO (1 << 0)
+//
+//uint32_t sysClockFreq = 0;
 
 /* Private function prototypes -----------------------------------------------*/
 static void MPU_Config(void);
 static void CPU_CACHE_Enable(void);
+static void Delay_MS(uint32_t ms);
 
 int main(void) {
 	/* System Init, System clock, voltage scaling and L1-Cache configuration are
@@ -73,30 +53,29 @@ int main(void) {
 	/* Enable the CPU Cache */
 	CPU_CACHE_Enable();
 
-	uint32_t sysClockSource = (*RCC_CFGR >> 3) & 0x3;
-
-	switch (sysClockSource) {
-	case RCC_CFGR_SW_HSI: // HSI
-		sysClockFreq = HSI_FREQUENCY;
-		break;
-	}
-
-	if (sysClockSource || sysClockFreq) {
-	}
-
-	// 10 seconds
-	for (int i = 1; i <= 100; i++) {
-		SysTick_Delay_us(100);
-	}
-
-	volatile uint32_t *value1 = (volatile uint32_t*) SYSTICK_BASE;
-	if (value1) {
-
-	}
+	/* STM32H7xx HAL library initialization:
+	 - Systick timer is configured by default as source of time base, but user
+	 can eventually implement his proper time base source (a general purpose
+	 timer for example or other time source), keeping in mind that Time base
+	 duration should be kept 1ms since PPP_TIMEOUT_VALUEs are defined and
+	 handled in milliseconds basis.
+	 - Set NVIC Group Priority to 4
+	 - Low Level Initialization
+	 */
+	HAL_Init();
 
 	/* Loop forever */
-	for (;;)
-		;
+	for (;;) {
+		Delay_MS(5000);
+		Delay_MS(5000);
+	}
+}
+
+void Delay_MS(uint32_t ms) {
+	uint32_t tickstart = HAL_GetTick();
+	while ((HAL_GetTick() - tickstart) < ms) {
+		// Empty loop or low power mode
+	}
 }
 
 /**
