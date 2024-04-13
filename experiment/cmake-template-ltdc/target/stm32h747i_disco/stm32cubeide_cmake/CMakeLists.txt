@@ -53,6 +53,8 @@ set (PROJECT_SOURCES
     ../../../drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal.c
 	../../../drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_cortex.c
 	../../../drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_gpio.c
+    ../../../drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_pwr.c
+    ../../../drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_pwr_ex.c	
     ../../../drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_rcc.c
     ../../../drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_rcc_ex.c
     ../../../target/common/system_stm32h7xx.c
