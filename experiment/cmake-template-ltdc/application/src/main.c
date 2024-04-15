@@ -68,6 +68,9 @@ int main(void) {
 	/* Configure the system clock to 400 MHz */
 	SystemClock_Config();
 
+	/* Initialize the LCD */
+	BSP_LCD_Init(0, LCD_ORIENTATION_LANDSCAPE);
+
 	/* Loop forever */
 	for (;;) {
 		Delay_MS(5000);

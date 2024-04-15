@@ -50,13 +50,32 @@ set (PROJECT_SOURCES
 	../../../application/src/main.c
 	../../../application/src/stm32h7xx_it.c
 	../../../application/src/syscalls.c
+	../../../drivers/BSP/Components/adv7533/adv7533.c
+	../../../drivers/BSP/Components/adv7533/adv7533_reg.c
+	../../../drivers/BSP/Components/is42s32800j/is42s32800j.c
+    ../../../drivers/BSP/Components/nt35510/nt35510.c
+    ../../../drivers/BSP/Components/nt35510/nt35510_reg.c
+	../../../drivers/BSP/Components/otm8009a/otm8009a.c
+    ../../../drivers/BSP/Components/otm8009a/otm8009a_reg.c
+    ../../../drivers/BSP/STM32H747I-DISCO/stm32h747i_discovery_bus.c
+	../../../drivers/BSP/STM32H747I-DISCO/stm32h747i_discovery_lcd.c
+	../../../drivers/BSP/STM32H747I-DISCO/stm32h747i_discovery_sdram.c
     ../../../drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal.c
 	../../../drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_cortex.c
+    ../../../drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_dma.c
+    ../../../drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_dma2d.c
+    ../../../drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_dsi.c
 	../../../drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_gpio.c
+    ../../../drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_i2c.c
+    ../../../drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_i2c_ex.c
+	../../../drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_ltdc.c
+    ../../../drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_mdma.c
     ../../../drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_pwr.c
     ../../../drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_pwr_ex.c	
     ../../../drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_rcc.c
     ../../../drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_rcc_ex.c
+    ../../../drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_sdram.c
+    ../../../drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_ll_fmc.c
     ../../../target/common/system_stm32h7xx.c
 	startup_stm32h747xihx.s
 	)
@@ -69,7 +88,11 @@ set (PROJECT_DEFINES
 set (PROJECT_INCLUDES
 	# LIST INCLUDE DIRECTORIES HERE
 	../../../application/inc
+    ../../../drivers/BSP/Components/adv7533
+    ../../../drivers/BSP/Components/Common
 	../../../drivers/BSP/Components/is42s32800j
+    ../../../drivers/BSP/Components/nt35510
+    ../../../drivers/BSP/Components/otm8009a
 	../../../drivers/BSP/STM32H747I-DISCO
     ../../../drivers/CMSIS/Device/ST/STM32H7xx/Include
     ../../../drivers/CMSIS/Include
