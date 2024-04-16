@@ -22,6 +22,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32h7xx_hal.h"
+#include "stm32h747i_discovery.h"
 #include "stm32h747i_discovery_lcd.h"
 //#include "stm32h747xx.h"
 //#include "stm32h7xx_hal_cortex.h"

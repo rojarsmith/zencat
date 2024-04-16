@@ -79,6 +79,8 @@ int main(void) {
 
 	MX_USART1_UART_Init();
 
+	BSP_PB_Init(BUTTON_WAKEUP, BUTTON_MODE_GPIO);
+
 	/* Loop forever */
 	for (;;) {
 		printf("IAP Demo Boot\r\n");
@@ -88,6 +90,12 @@ int main(void) {
 		BSP_LCD_FillRect(0, 0, 0, 800, 480, LCD_COLOR_ARGB8888_RED);
 		Delay_MS(3000);
 		BSP_LCD_FillRect(0, 0, 0, 800, 480, LCD_COLOR_ARGB8888_BLUE);
+
+		// User button keep pressing.
+		// Trigger 1 time.
+		if ((BSP_PB_GetState(BUTTON_WAKEUP) == GPIO_PIN_SET)) {
+			printf("Button `Wakeup`\r\n");
+		}
 	}
 }
 

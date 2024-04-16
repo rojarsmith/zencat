@@ -58,6 +58,7 @@ set (PROJECT_SOURCES
     ../../../drivers/BSP/Components/nt35510/nt35510_reg.c
 	../../../drivers/BSP/Components/otm8009a/otm8009a.c
     ../../../drivers/BSP/Components/otm8009a/otm8009a_reg.c
+    ../../../drivers/BSP/STM32H747I-DISCO/stm32h747i_discovery.c
     ../../../drivers/BSP/STM32H747I-DISCO/stm32h747i_discovery_bus.c
 	../../../drivers/BSP/STM32H747I-DISCO/stm32h747i_discovery_lcd.c
 	../../../drivers/BSP/STM32H747I-DISCO/stm32h747i_discovery_sdram.c
@@ -66,6 +67,7 @@ set (PROJECT_SOURCES
     ../../../drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_dma.c
     ../../../drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_dma2d.c
     ../../../drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_dsi.c
+    ../../../drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_exti.c
 	../../../drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_gpio.c
     ../../../drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_i2c.c
     ../../../drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_i2c_ex.c
