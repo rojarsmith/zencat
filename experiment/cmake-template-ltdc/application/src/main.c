@@ -70,12 +70,16 @@ int main(void) {
 
 	/* Initialize the LCD */
 	BSP_LCD_Init(0, LCD_ORIENTATION_LANDSCAPE);
-	BSP_LCD_FillRect(0, 0, 0, 800, 480, 0xFFFF0000UL); // RED 0xFFFF0000UL
+	BSP_LCD_FillRect(0, 0, 0, 800, 480, LCD_COLOR_ARGB8888_BLUE);
 
 	/* Loop forever */
 	for (;;) {
-		Delay_MS(5000);
-		Delay_MS(5000);
+		Delay_MS(3000);
+		BSP_LCD_FillRect(0, 0, 0, 800, 480, LCD_COLOR_ARGB8888_GREEN);
+		Delay_MS(3000);
+		BSP_LCD_FillRect(0, 0, 0, 800, 480, LCD_COLOR_ARGB8888_RED);
+		Delay_MS(3000);
+		BSP_LCD_FillRect(0, 0, 0, 800, 480, LCD_COLOR_ARGB8888_BLUE);
 	}
 }
 
