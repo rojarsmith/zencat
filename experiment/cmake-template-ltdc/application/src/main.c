@@ -17,6 +17,7 @@
  */
 
 #include <stdint.h>
+#include <stdio.h>
 #include "main.h"
 
 //#define RCC_BASE    0x40023800 //H7 0x58024400
@@ -36,11 +37,15 @@
 //
 //uint32_t sysClockFreq = 0;
 
+/* Private variables ---------------------------------------------------------*/
+UART_HandleTypeDef huart1;
+
 /* Private function prototypes -----------------------------------------------*/
 static void MPU_Config(void);
 static void CPU_CACHE_Enable(void);
 static void SystemClock_Config(void);
 static void Delay_MS(uint32_t ms);
+static void MX_USART1_UART_Init(void);
 
 int main(void) {
 	/* System Init, System clock, voltage scaling and L1-Cache configuration are
@@ -72,8 +77,11 @@ int main(void) {
 	BSP_LCD_Init(0, LCD_ORIENTATION_LANDSCAPE);
 	BSP_LCD_FillRect(0, 0, 0, 800, 480, LCD_COLOR_ARGB8888_BLUE);
 
+	MX_USART1_UART_Init();
+
 	/* Loop forever */
 	for (;;) {
+		printf("IAP Demo Boot\r\n");
 		Delay_MS(3000);
 		BSP_LCD_FillRect(0, 0, 0, 800, 480, LCD_COLOR_ARGB8888_GREEN);
 		Delay_MS(3000);
@@ -270,4 +278,36 @@ static void SystemClock_Config(void) {
 void Error_Handler(void) {
 	while (1) {
 	}
+}
+
+/**
+ * @brief USART1 Initialization Function
+ * @param None
+ * @retval None
+ */
+static void MX_USART1_UART_Init(void) {
+	huart1.Instance = USART1;
+	huart1.Init.BaudRate = 115200;
+	huart1.Init.WordLength = UART_WORDLENGTH_8B;
+	huart1.Init.StopBits = UART_STOPBITS_1;
+	huart1.Init.Parity = UART_PARITY_NONE;
+	huart1.Init.Mode = UART_MODE_TX_RX;
+	huart1.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+	huart1.Init.OverSampling = UART_OVERSAMPLING_16;
+	huart1.Init.OneBitSampling = UART_ONE_BIT_SAMPLE_DISABLE;
+	huart1.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT;
+	if (HAL_UART_Init(&huart1) != HAL_OK) {
+		Error_Handler();
+	}
+}
+
+// printf to uart //
+int _write(int file, char *ptr, int len) {
+	int idx;
+
+	for (idx = 0; idx < len; idx++) {
+		HAL_UART_Transmit(&huart1, (uint8_t*) ptr++, 1, 100);
+	}
+
+	return idx;
 }

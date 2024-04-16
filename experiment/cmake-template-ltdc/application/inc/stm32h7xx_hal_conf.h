@@ -75,7 +75,7 @@
 /* #define HAL_SPI_MODULE_ENABLED   */
 /* #define HAL_SWPMI_MODULE_ENABLED   */
 /* #define HAL_TIM_MODULE_ENABLED   */
-/* #define HAL_UART_MODULE_ENABLED   */
+#define HAL_UART_MODULE_ENABLED
 /* #define HAL_USART_MODULE_ENABLED   */
 /* #define HAL_IRDA_MODULE_ENABLED   */
 /* #define HAL_SMARTCARD_MODULE_ENABLED   */
@@ -251,7 +251,7 @@
 #endif /* HAL_GPIO_MODULE_ENABLED */
 
 #ifdef HAL_DMA_MODULE_ENABLED
-  #include "stm32h7xx_hal_dma.h"
+#include "stm32h7xx_hal_dma.h"
 #endif /* HAL_DMA_MODULE_ENABLED */
 
 #ifdef HAL_MDMA_MODULE_ENABLED
@@ -267,7 +267,7 @@
 #endif /* HAL_DCMI_MODULE_ENABLED */
 
 #ifdef HAL_DMA2D_MODULE_ENABLED
-  #include "stm32h7xx_hal_dma2d.h"
+#include "stm32h7xx_hal_dma2d.h"
 #endif /* HAL_DMA2D_MODULE_ENABLED */
 
 #ifdef HAL_DSI_MODULE_ENABLED
@@ -363,7 +363,7 @@
 #endif /* HAL_NAND_MODULE_ENABLED */
 
 #ifdef HAL_I2C_MODULE_ENABLED
- #include "stm32h7xx_hal_i2c.h"
+#include "stm32h7xx_hal_i2c.h"
 #endif /* HAL_I2C_MODULE_ENABLED */
 
 #ifdef HAL_I2S_MODULE_ENABLED
@@ -459,7 +459,7 @@
 #endif /* HAL_TIM_MODULE_ENABLED */
 
 #ifdef HAL_UART_MODULE_ENABLED
- #include "stm32h7xx_hal_uart.h"
+#include "stm32h7xx_hal_uart.h"
 #endif /* HAL_UART_MODULE_ENABLED */
 
 #ifdef HAL_USART_MODULE_ENABLED

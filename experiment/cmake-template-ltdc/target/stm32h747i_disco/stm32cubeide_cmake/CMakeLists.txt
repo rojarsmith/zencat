@@ -48,6 +48,7 @@ set (RUNTIME_LIBRARY_SYSCALLS "--specs=nosys.specs")
 set (PROJECT_SOURCES
 	# LIST SOURCE FILES HERE
 	../../../application/src/main.c
+    ../../../application/src/stm32h7xx_hal_msp.c
 	../../../application/src/stm32h7xx_it.c
 	../../../application/src/syscalls.c
 	../../../drivers/BSP/Components/adv7533/adv7533.c
@@ -75,6 +76,8 @@ set (PROJECT_SOURCES
     ../../../drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_rcc.c
     ../../../drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_rcc_ex.c
     ../../../drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_sdram.c
+    ../../../drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_uart.c
+    ../../../drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_uart_ex.c
     ../../../drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_ll_fmc.c
     ../../../target/common/system_stm32h7xx.c
 	startup_stm32h747xihx.s
