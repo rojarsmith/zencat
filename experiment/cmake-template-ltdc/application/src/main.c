@@ -70,6 +70,7 @@ int main(void) {
 
 	/* Initialize the LCD */
 	BSP_LCD_Init(0, LCD_ORIENTATION_LANDSCAPE);
+	BSP_LCD_FillRect(0, 0, 0, 800, 480, 0xFFFF0000UL); // RED 0xFFFF0000UL
 
 	/* Loop forever */
 	for (;;) {
