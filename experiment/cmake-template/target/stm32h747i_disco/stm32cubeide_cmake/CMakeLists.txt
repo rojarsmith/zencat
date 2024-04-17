@@ -5,10 +5,10 @@
 # usage: Edit "VARIABLES"-section to suit project requirements.
 #        For debug build:
 #          cmake -DCMAKE_TOOLCHAIN_FILE=cubeide-gcc.cmake  -S ./ -B Debug -G"Unix Makefiles" -DCMAKE_BUILD_TYPE=Debug
-#          make -C Debug VERBOSE=1
+#          make -C Debug VERBOSE=1 -j
 #        For release build:
 #          cmake -DCMAKE_TOOLCHAIN_FILE=cubeide-gcc.cmake  -S ./ -B Release -G"Unix Makefiles" -DCMAKE_BUILD_TYPE=Release
-#          make -C Release VERBOSE=1
+#          make -C Release VERBOSE=1 -j
 #############################################################################################################################
 cmake_minimum_required(VERSION 3.20)
 
@@ -37,18 +37,19 @@ set (MFLOAT_ABI_MIX                   "-mfloat-abi=softfp")
 ###################### VARIABLES ######################################
 set (PROJECT_NAME             "cmake-template")
 set (PROJECT_TYPE             "exe")
-set (LINKER_SCRIPT            "../STM32F746NGHX_FLASH.ld")
+set (LINKER_SCRIPT            "../STM32H747XIHX_FLASH.ld")
 set (MCPU                     "-mcpu=Cortex-M7")
-set (MFPU                 "-mfpu=fpv5-sp-d16")
+set (MFPU                 "-mfpu=fpv5-d16")
 set (MFLOAT_ABI               "")
 set (RUNTIME_LIBRARY          "--specs=nano.specs")
 set (RUNTIME_LIBRARY_SYSCALLS "--specs=nosys.specs")
 
+set (BASE_PROJECT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../")
 
 set (PROJECT_SOURCES
 	# LIST SOURCE FILES HERE
-	startup_stm32f746nghx.s
-	../../application/src/main.c
+	startup_stm32h747xihx.s
+	${BASE_PROJECT_DIR}/application/src/main.c
 	)
 
 set (PROJECT_DEFINES

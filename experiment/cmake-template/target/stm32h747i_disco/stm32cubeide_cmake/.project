@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>cmaket</name>
+	<name>cmake-template</name>
 	<comment></comment>
 	<projects>
 	</projects>
@@ -33,7 +33,7 @@
 		<link>
 			<name>application</name>
 			<type>2</type>
-			<locationURI>PARENT-2-PROJECT_LOC/application</locationURI>
+			<locationURI>PARENT-3-PROJECT_LOC/application</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>
