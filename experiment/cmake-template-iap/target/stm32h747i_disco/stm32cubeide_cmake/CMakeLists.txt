@@ -50,6 +50,7 @@ set (PROJECT_SOURCES
 	# LIST SOURCE FILES HERE
 	startup_stm32h747xihx.s
 	${BASE_PROJECT_DIR}/application/src/main.c
+    ${SDK_PATH}/stm32/drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_cortex.c
 	)
 
 set (PROJECT_DEFINES
@@ -59,7 +60,12 @@ set (PROJECT_DEFINES
 
 set (PROJECT_INCLUDES
 	# LIST INCLUDE DIRECTORIES HERE
-
+    ${BASE_PROJECT_DIR}/application/inc
+    ${SDK_PATH}/stm32/drivers/BSP/Components/is42s32800j
+    ${SDK_PATH}/stm32/drivers/BSP/STM32H747I-DISCO
+    ${SDK_PATH}/stm32/drivers/CMSIS/Include
+    ${SDK_PATH}/stm32/drivers/CMSIS/Device/ST/STM32H7xx/Include
+    ${SDK_PATH}/stm32/drivers/STM32H7xx_HAL_Driver/Inc
     )
 
 ############ MODIFY ACCORDING TO REQUIREMENTS) ########################
@@ -79,6 +85,11 @@ endif()
 
 add_compile_definitions (${PROJECT_DEFINES})
 include_directories (${PROJECT_INCLUDES})
+
+add_definitions(
+    -DCORE_CM7
+    -DSTM32H747xx
+)
 
 set (CMAKE_EXECUTABLE_SUFFIX ".elf")
 set (CMAKE_STATIC_LIBRARY_SUFFIX ".a")
