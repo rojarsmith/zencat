@@ -12,3 +12,9 @@ Support:
 CMake template support STM32CubeIDE
 
 Import --> Existing Projects into Workspace --> `experiment/cmake-template`
+
+## experiment/cmake-template-iap
+
+Project Properties-->C/C++ Build-->Other options
+
+-DCMAKE_TOOLCHAIN_FILE=cubeide-gcc.cmake -DCMAKE_BUILD_TYPE=Debug -DSDK_PATH="C:/zencat/experiment/cmake-template-sdk"

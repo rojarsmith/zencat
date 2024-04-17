@@ -18,78 +18,40 @@
 
 #include "main.h"
 
-#if !defined(__SOFT_FP__) && defined(__ARM_FP)
-  #warning "FPU is not initialized, but the project is compiling for an FPU. Please initialize the FPU before use."
-#endif
+/* Private variables ---------------------------------------------------------*/
+UART_HandleTypeDef huart1;
 
 /* Private function prototypes -----------------------------------------------*/
 static void MPU_Config(void);
-
-//#define RCC_BASE    0x58024400
-#define RCC_CFGR    (volatile uint32_t*)(RCC_BASE + 0x10)
-
-#define HSI_FREQUENCY 64000000
-
-#define SYSTICK_BASE       0xE000E010
-#define SYSTICK_CTRL_PTR   (volatile uint32_t*)(SYSTICK_BASE + 0x00)
-#define SYSTICK_LOAD_PTR   (volatile uint32_t*)(SYSTICK_BASE + 0x04)
-#define SYSTICK_VAL_PTR    (volatile uint32_t*)(SYSTICK_BASE + 0x08)
-
-#define SYSTICK_COUNTFLAG  (1 << 16)
-#define SYSTICK_CLKSOURCE  (1 << 2)
-#define SYSTICK_TICKINT    (1 << 1)
-#define SYSTICK_ENABLE     (1 << 0)
-
-uint32_t sysClockFreq = 0;
-
-void SysTick_Delay_us(uint32_t us) {
-	uint32_t tmp = 0;
-
-	uint32_t dddd = *SYSTICK_CTRL_PTR;
-	*SYSTICK_CTRL_PTR |= SYSTICK_CLKSOURCE; // Internal
-	uint32_t dddd2 = *SYSTICK_CTRL_PTR;
-	*SYSTICK_LOAD_PTR = sysClockFreq / 1000 * us;
-	uint32_t dddd3 = *SYSTICK_LOAD_PTR;
-	*SYSTICK_VAL_PTR = 0;
-	*SYSTICK_CTRL_PTR |= SYSTICK_ENABLE;
-
-	do {
-		tmp = *SYSTICK_CTRL_PTR;
-	} while (!(tmp & SYSTICK_COUNTFLAG));
-
-	*SYSTICK_CTRL_PTR &= ~SYSTICK_ENABLE;
-
-	if (tmp || dddd || dddd2 || dddd3) {
-	}
-}
+static void CPU_CACHE_Enable(void);
+static void SystemClock_Config(void);
+static void Delay_MS(uint32_t ms);
+static void MX_USART1_UART_Init(void);
 
 int main(void) {
 	MPU_Config();
+	CPU_CACHE_Enable();
+	HAL_Init();
+	SystemClock_Config();
 
-	uint32_t sysClockSource = (*RCC_CFGR >> 3) & 0x3;
+	MX_USART1_UART_Init();
 
-	switch (sysClockSource) {
-	case 0: // HSI
-		sysClockFreq = HSI_FREQUENCY;
-		break;
+	BSP_PB_Init(BUTTON_WAKEUP, BUTTON_MODE_GPIO);
+
+	for (;;) {
+		printf("IAP Demo Boot\r\n");
+		Delay_MS(3000);
+		if ((BSP_PB_GetState(BUTTON_WAKEUP) == GPIO_PIN_SET)) {
+			printf("Button `Wakeup`\r\n");
+		}
 	}
+}
 
-	if (sysClockSource || sysClockFreq) {
+void Delay_MS(uint32_t ms) {
+	uint32_t tickstart = HAL_GetTick();
+	while ((HAL_GetTick() - tickstart) < ms) {
+		// Empty loop or low power mode
 	}
-
-	// 10 seconds
-	for (int i = 1; i <= 100; i++) {
-		SysTick_Delay_us(100);
-	}
-
-	volatile uint32_t *value1 = (volatile uint32_t*) SYSTICK_BASE;
-	if (value1) {
-
-	}
-
-	/* Loop forever */
-	for (;;)
-		;
 }
 
 /**
@@ -152,4 +114,155 @@ static void MPU_Config(void) {
 
 	/* Enable the MPU */
 	HAL_MPU_Enable(MPU_PRIVILEGED_DEFAULT);
+}
+
+/**
+ * @brief  CPU L1-Cache enable.
+ * @param  None
+ * @retval None
+ */
+static void CPU_CACHE_Enable(void) {
+	/* Enable I-Cache */
+	SCB_EnableICache();
+
+	/* Enable D-Cache */
+	SCB_EnableDCache();
+}
+
+/**
+ * @brief  System Clock Configuration
+ *         The system Clock is configured as follow :
+ *            System Clock source            = PLL (HSE)
+ *            SYSCLK(Hz)                     = 400000000 (Cortex-M7 CPU Clock)
+ *            HCLK(Hz)                       = 200000000 (Cortex-M4 CPU, Bus matrix Clocks)
+ *            AHB Prescaler                  = 2
+ *            D1 APB3 Prescaler              = 2 (APB3 Clock  100MHz)
+ *            D2 APB1 Prescaler              = 2 (APB1 Clock  100MHz)
+ *            D2 APB2 Prescaler              = 2 (APB2 Clock  100MHz)
+ *            D3 APB4 Prescaler              = 2 (APB4 Clock  100MHz)
+ *            HSE Frequency(Hz)              = 25000000
+ *            PLL_M                          = 5
+ *            PLL_N                          = 160
+ *            PLL_P                          = 2
+ *            PLL_Q                          = 4
+ *            PLL_R                          = 2
+ *            VDD(V)                         = 3.3
+ *            Flash Latency(WS)              = 4
+ * @param  None
+ * @retval None
+ */
+static void SystemClock_Config(void) {
+	RCC_ClkInitTypeDef RCC_ClkInitStruct;
+	RCC_OscInitTypeDef RCC_OscInitStruct;
+	HAL_StatusTypeDef ret = HAL_OK;
+
+	/*!< Supply configuration update enable */
+	HAL_PWREx_ConfigSupply(PWR_DIRECT_SMPS_SUPPLY);
+
+	/* The voltage scaling allows optimizing the power consumption when the device is
+	 clocked below the maximum system frequency, to update the voltage scaling value
+	 regarding system frequency refer to product datasheet.  */
+	__HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
+
+	while (!__HAL_PWR_GET_FLAG(PWR_FLAG_VOSRDY)) {
+	}
+
+	/* Enable HSE Oscillator and activate PLL with HSE as source */
+	RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
+	RCC_OscInitStruct.HSEState = RCC_HSE_ON;
+	RCC_OscInitStruct.HSIState = RCC_HSI_OFF;
+	RCC_OscInitStruct.CSIState = RCC_CSI_OFF;
+	RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
+	RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
+
+	RCC_OscInitStruct.PLL.PLLM = 5;
+	RCC_OscInitStruct.PLL.PLLN = 160;
+	RCC_OscInitStruct.PLL.PLLFRACN = 0;
+	RCC_OscInitStruct.PLL.PLLP = 2;
+	RCC_OscInitStruct.PLL.PLLR = 2;
+	RCC_OscInitStruct.PLL.PLLQ = 4;
+
+	RCC_OscInitStruct.PLL.PLLVCOSEL = RCC_PLL1VCOWIDE;
+	RCC_OscInitStruct.PLL.PLLRGE = RCC_PLL1VCIRANGE_2;
+	ret = HAL_RCC_OscConfig(&RCC_OscInitStruct);
+	if (ret != HAL_OK) {
+		Error_Handler();
+	}
+
+	/* Select PLL as system clock source and configure  bus clocks dividers */
+	RCC_ClkInitStruct.ClockType = (RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_HCLK
+			| RCC_CLOCKTYPE_D1PCLK1 | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2
+			| RCC_CLOCKTYPE_D3PCLK1);
+
+	RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
+	RCC_ClkInitStruct.SYSCLKDivider = RCC_SYSCLK_DIV1;
+	RCC_ClkInitStruct.AHBCLKDivider = RCC_HCLK_DIV2;
+	RCC_ClkInitStruct.APB3CLKDivider = RCC_APB3_DIV2;
+	RCC_ClkInitStruct.APB1CLKDivider = RCC_APB1_DIV2;
+	RCC_ClkInitStruct.APB2CLKDivider = RCC_APB2_DIV2;
+	RCC_ClkInitStruct.APB4CLKDivider = RCC_APB4_DIV2;
+	ret = HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_4);
+	if (ret != HAL_OK) {
+		Error_Handler();
+	}
+
+	/*
+	 Note : The activation of the I/O Compensation Cell is recommended with communication  interfaces
+	 (GPIO, SPI, FMC, QSPI ...)  when  operating at  high frequencies(please refer to product datasheet)
+	 The I/O Compensation Cell activation  procedure requires :
+	 - The activation of the CSI clock
+	 - The activation of the SYSCFG clock
+	 - Enabling the I/O Compensation Cell : setting bit[0] of register SYSCFG_CCCSR
+	 */
+
+	/*activate CSI clock mondatory for I/O Compensation Cell*/
+	__HAL_RCC_CSI_ENABLE();
+
+	/* Enable SYSCFG clock mondatory for I/O Compensation Cell */
+	__HAL_RCC_SYSCFG_CLK_ENABLE();
+
+	/* Enables the I/O Compensation Cell */
+	HAL_EnableCompensationCell();
+}
+
+/**
+ * @brief USART1 Initialization Function
+ * @param None
+ * @retval None
+ */
+static void MX_USART1_UART_Init(void) {
+	huart1.Instance = USART1;
+	huart1.Init.BaudRate = 115200;
+	huart1.Init.WordLength = UART_WORDLENGTH_8B;
+	huart1.Init.StopBits = UART_STOPBITS_1;
+	huart1.Init.Parity = UART_PARITY_NONE;
+	huart1.Init.Mode = UART_MODE_TX_RX;
+	huart1.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+	huart1.Init.OverSampling = UART_OVERSAMPLING_16;
+	huart1.Init.OneBitSampling = UART_ONE_BIT_SAMPLE_DISABLE;
+	huart1.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT;
+	if (HAL_UART_Init(&huart1) != HAL_OK) {
+		Error_Handler();
+	}
+}
+
+/**
+ * @brief  This function is executed in case of error occurrence.
+ * @param  None
+ * @retval None
+ */
+void Error_Handler(void) {
+	while (1) {
+	}
+}
+
+// printf to uart //
+int _write(int file, char *ptr, int len) {
+	int idx;
+
+	for (idx = 0; idx < len; idx++) {
+		HAL_UART_Transmit(&huart1, (uint8_t*) ptr++, 1, 100);
+	}
+
+	return idx;
 }

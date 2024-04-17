@@ -44,13 +44,29 @@ set (MFLOAT_ABI               "")
 set (RUNTIME_LIBRARY          "--specs=nano.specs")
 set (RUNTIME_LIBRARY_SYSCALLS "--specs=nosys.specs")
 
+set (SDK_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../../../cmake-template-sdk")
 set (BASE_PROJECT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../")
 
 set (PROJECT_SOURCES
 	# LIST SOURCE FILES HERE
 	startup_stm32h747xihx.s
 	${BASE_PROJECT_DIR}/application/src/main.c
+	${BASE_PROJECT_DIR}/application/src/stm32h7xx_hal_msp.c
+	${BASE_PROJECT_DIR}/application/src/stm32h7xx_it.c
+	${BASE_PROJECT_DIR}/application/src/syscalls.c
+	${SDK_PATH}/stm32/drivers/BSP/STM32H747I-DISCO/stm32h747i_discovery.c
+    ${SDK_PATH}/stm32/drivers/CMSIS/Device/ST/STM32H7xx/Source/Templates/system_stm32h7xx_dualcore_boot_cm4_cm7.c
+	${SDK_PATH}/stm32/drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal.c
     ${SDK_PATH}/stm32/drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_cortex.c
+    ${SDK_PATH}/stm32/drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_dma.c
+    ${SDK_PATH}/stm32/drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_exti.c
+    ${SDK_PATH}/stm32/drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_gpio.c
+    ${SDK_PATH}/stm32/drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_pwr.c
+    ${SDK_PATH}/stm32/drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_pwr_ex.c
+    ${SDK_PATH}/stm32/drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_rcc.c
+    ${SDK_PATH}/stm32/drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_rcc_ex.c
+    ${SDK_PATH}/stm32/drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_uart.c
+    ${SDK_PATH}/stm32/drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_uart_ex.c
 	)
 
 set (PROJECT_DEFINES
