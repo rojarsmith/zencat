@@ -21,6 +21,11 @@
 /* Private variables ---------------------------------------------------------*/
 UART_HandleTypeDef huart1;
 
+unsigned char __attribute__((section(".fw_info_section_flash"))) fw_info_flash[10] =
+		{ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+unsigned char __attribute__((section(".fw_info2_section_flash"))) fw_info2_flash[10] =
+		{ 'a', 'b', 'c', 'd' };
+
 /* Private function prototypes -----------------------------------------------*/
 static void MPU_Config(void);
 static void CPU_CACHE_Enable(void);
@@ -37,6 +42,17 @@ int main(void) {
 	MX_USART1_UART_Init();
 
 	BSP_PB_Init(BUTTON_WAKEUP, BUTTON_MODE_GPIO);
+
+	const unsigned char *fidx = (const unsigned char*) (0x08020000);
+	for (int i = 0; i < 10; i++) {
+		printf("buf_flash[%d] = %d\r\n", i, fidx[i]);
+	}
+
+	// align 4
+	const unsigned char *fidx2 = (const unsigned char*) (0x08020000 + 10 + 2);
+	for (int i = 0; i <= 3; i++) {
+		printf("buf_flash[%d] = %c\r\n", i, fidx2[i]);
+	}
 
 	for (;;) {
 		printf("IAP Demo Boot\r\n");
