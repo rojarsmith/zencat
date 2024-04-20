@@ -35,7 +35,7 @@ set (MFLOAT_ABI_MIX                   "-mfloat-abi=softfp")
 #######################################################################
 
 ###################### VARIABLES ######################################
-set (PROJECT_NAME             "cmake-template-iap")
+set (PROJECT_NAME             "cmake-template-iap-app")
 set (PROJECT_TYPE             "exe")
 set (LINKER_SCRIPT            "../STM32H747XIHX_FLASH.ld")
 set (MCPU                     "-mcpu=Cortex-M7")
@@ -54,8 +54,8 @@ set (PROJECT_SOURCES
 	${BASE_PROJECT_DIR}/application/src/stm32h7xx_hal_msp.c
 	${BASE_PROJECT_DIR}/application/src/stm32h7xx_it.c
 	${BASE_PROJECT_DIR}/application/src/syscalls.c
+	${BASE_PROJECT_DIR}/common/Src/system_stm32h7xx_dualcore_boot_cm4_cm7.c
 	${SDK_PATH}/stm32/drivers/BSP/STM32H747I-DISCO/stm32h747i_discovery.c
-    ${SDK_PATH}/stm32/drivers/CMSIS/Device/ST/STM32H7xx/Source/Templates/system_stm32h7xx_dualcore_boot_cm4_cm7.c
 	${SDK_PATH}/stm32/drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal.c
     ${SDK_PATH}/stm32/drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_cortex.c
     ${SDK_PATH}/stm32/drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_dma.c

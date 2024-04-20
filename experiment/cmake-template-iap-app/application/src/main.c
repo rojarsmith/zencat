@@ -18,16 +18,13 @@
 
 #include "main.h"
 
-/* Private define ------------------------------------------------------------*/
-#define FLASH_ADDR_APP 0x08020800
-
 /* Private variables ---------------------------------------------------------*/
 UART_HandleTypeDef huart1;
 
-unsigned char __attribute__((section(".fw_info_section_flash"))) fw_info_flash[10] =
-		{ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-unsigned char __attribute__((section(".fw_info2_section_flash"))) fw_info2_flash[10] =
-		{ 'a', 'b', 'c', 'd' };
+//unsigned char __attribute__((section(".fw_info_section_flash"))) fw_info_flash[10] =
+//		{ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+//unsigned char __attribute__((section(".fw_info2_section_flash"))) fw_info2_flash[10] =
+//		{ 'a', 'b', 'c', 'd' };
 
 /* Private function prototypes -----------------------------------------------*/
 static void MPU_Config(void);
@@ -46,23 +43,19 @@ int main(void) {
 
 	BSP_PB_Init(BUTTON_WAKEUP, BUTTON_MODE_GPIO);
 
-	const unsigned char *fidx = (const unsigned char*) (0x08020000);
-	for (int i = 0; i < 10; i++) {
-		printf("buf_flash[%d] = %d\r\n", i, fidx[i]);
-	}
+//	const unsigned char *fidx = (const unsigned char*) (0x08020000);
+//	for (int i = 0; i < 10; i++) {
+//		printf("buf_flash[%d] = %d\r\n", i, fidx[i]);
+//	}
 
 	// align 4
-	const unsigned char *fidx2 = (const unsigned char*) (0x08020000 + 10 + 2);
-	for (int i = 0; i <= 3; i++) {
-		printf("buf_flash[%d] = %c\r\n", i, fidx2[i]);
-	}
-
-	uint32_t address = *(__IO uint32_t*)FLASH_ADDR_APP;
-	printf("Value at address 0x%08X: 0x%08X\n", (unsigned int) FLASH_ADDR_APP,
-			(unsigned int) address);
+//	const unsigned char *fidx2 = (const unsigned char*) (0x08020000 + 10 + 2);
+//	for (int i = 0; i <= 3; i++) {
+//		printf("buf_flash[%d] = %c\r\n", i, fidx2[i]);
+//	}
 
 	for (;;) {
-		printf("IAP Demo - Boot\r\n");
+		printf("IAP Demo - App\r\n");
 		Delay_MS(3000);
 		if ((BSP_PB_GetState(BUTTON_WAKEUP) == GPIO_PIN_SET)) {
 			printf("Button `Wakeup`\r\n");
