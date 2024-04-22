@@ -18,6 +18,12 @@
 
 #include "main.h"
 
+/* Private define ------------------------------------------------------------*/
+#define FLASH_ADDR_APP 0x08000000
+
+/* Private typedef -----------------------------------------------------------*/
+typedef void (*pFunction)(void);
+
 /* Private variables ---------------------------------------------------------*/
 UART_HandleTypeDef huart1;
 
@@ -30,8 +36,9 @@ UART_HandleTypeDef huart1;
 static void MPU_Config(void);
 static void CPU_CACHE_Enable(void);
 static void SystemClock_Config(void);
-static void Delay_MS(uint32_t ms);
 static void MX_USART1_UART_Init(void);
+static void Delay_MS(uint32_t ms);
+static void Jump_To_Boot(uint32_t address);
 
 int main(void) {
 	MPU_Config();
@@ -43,11 +50,17 @@ int main(void) {
 
 	BSP_PB_Init(BUTTON_WAKEUP, BUTTON_MODE_GPIO);
 
+	uint32_t
+	address = *(__IO uint32_t*)FLASH_ADDR_APP; // 0x24080000
+	printf("Value at address 0x%08X: 0x%08X\n", (unsigned int) FLASH_ADDR_APP,
+			(unsigned int) address);
+
 	for (;;) {
 		printf("IAP Demo - App\r\n");
 		Delay_MS(3000);
 		if ((BSP_PB_GetState(BUTTON_WAKEUP) == GPIO_PIN_SET)) {
 			printf("Button `Wakeup`\r\n");
+			Jump_To_Boot(address);
 		}
 	}
 }
@@ -59,6 +72,45 @@ void Delay_MS(uint32_t ms) {
 	}
 }
 
+static void Jump_To_Boot(uint32_t address) {
+	uint32_t jumpAddress;
+	pFunction jumpToApplication;
+
+	// This is testing what is AT the address,
+	// which should be an initial stack pointer,
+	// that needs to be in RAM
+	// The first value stored in the vector table
+	// is the reset value of the stack pointer
+	// AXI SRAM (RAM_D1): 0x24000000~0x2407FFFF(512kb)
+	// 0x24080000 reserved
+	// 2408 0000 = 00100100000010000000000000000000
+	// 2BF7 FFFF = 00101011111101111111111111111111
+	if ((address & 0x2BF7FFFF) == 0x20000000) {
+		//
+		// Disable all interrupts
+		//
+		NVIC->ICER[0] = 0xFFFFFFFF;
+		NVIC->ICER[1] = 0xFFFFFFFF;
+		NVIC->ICER[2] = 0xFFFFFFFF;
+		//
+		// Clear pendings
+		//
+		NVIC->ICPR[0] = 0xFFFFFFFF;
+		NVIC->ICPR[1] = 0xFFFFFFFF;
+		NVIC->ICPR[2] = 0xFFFFFFFF;
+
+		SysTick->CTRL = 0;  // Disable SysTick
+
+		// Set vector table
+		SCB->VTOR = (unsigned long) FLASH_ADDR_APP;
+
+		jumpAddress = *(__IO uint32_t*)(FLASH_ADDR_APP + 4);
+		jumpToApplication = (pFunction) jumpAddress;
+		__set_MSP(*(__IO uint32_t*)FLASH_ADDR_APP);
+		jumpToApplication();
+	}
+}
+
 /**
  * @brief  Configure the MPU attributes as Write Through for SDRAM.
  * @note   The Base Address is SDRAM_DEVICE_ADDR.
@@ -67,7 +119,6 @@ void Delay_MS(uint32_t ms) {
  * @retval None
  */
 static void MPU_Config(void) {
-	return;
 	MPU_Region_InitTypeDef MPU_InitStruct;
 
 	/* Disable the MPU */

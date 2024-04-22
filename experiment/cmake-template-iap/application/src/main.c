@@ -86,7 +86,16 @@ void Delay_MS(uint32_t ms) {
 static void Jump_To_App(uint32_t address) {
 	uint32_t jumpAddress;
 	pFunction jumpToApplication;
-	// 256 kb, mask=0x2FFBFFFF
+
+	// This is testing what is AT the address,
+	// which should be an initial stack pointer,
+	// that needs to be in RAM
+	// The first value stored in the vector table
+	// is the reset value of the stack pointer
+	// AXI SRAM (RAM_D1): 0x24000000~0x2407FFFF(512kb)
+	// 0x24080000 reserved
+	// 2408 0000 = 00100100000010000000000000000000
+	// 2BF7 FFFF = 00101011111101111111111111111111
 	if ((address & 0x2BF7FFFF) == 0x20000000) {
 		//
 		// Disable all interrupts
@@ -121,7 +130,6 @@ static void Jump_To_App(uint32_t address) {
  * @retval None
  */
 static void MPU_Config(void) {
-	return;
 	MPU_Region_InitTypeDef MPU_InitStruct;
 
 	/* Disable the MPU */
