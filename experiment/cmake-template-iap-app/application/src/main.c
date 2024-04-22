@@ -43,17 +43,6 @@ int main(void) {
 
 	BSP_PB_Init(BUTTON_WAKEUP, BUTTON_MODE_GPIO);
 
-//	const unsigned char *fidx = (const unsigned char*) (0x08020000);
-//	for (int i = 0; i < 10; i++) {
-//		printf("buf_flash[%d] = %d\r\n", i, fidx[i]);
-//	}
-
-	// align 4
-//	const unsigned char *fidx2 = (const unsigned char*) (0x08020000 + 10 + 2);
-//	for (int i = 0; i <= 3; i++) {
-//		printf("buf_flash[%d] = %c\r\n", i, fidx2[i]);
-//	}
-
 	for (;;) {
 		printf("IAP Demo - App\r\n");
 		Delay_MS(3000);

@@ -19,7 +19,10 @@
 #include "main.h"
 
 /* Private define ------------------------------------------------------------*/
-#define FLASH_ADDR_APP 0x08020800
+#define FLASH_ADDR_APP 0x08040000
+
+/* Private typedef -----------------------------------------------------------*/
+typedef void (*pFunction)(void);
 
 /* Private variables ---------------------------------------------------------*/
 UART_HandleTypeDef huart1;
@@ -33,8 +36,9 @@ unsigned char __attribute__((section(".fw_info2_section_flash"))) fw_info2_flash
 static void MPU_Config(void);
 static void CPU_CACHE_Enable(void);
 static void SystemClock_Config(void);
-static void Delay_MS(uint32_t ms);
 static void MX_USART1_UART_Init(void);
+static void Delay_MS(uint32_t ms);
+static void Jump_To_App(uint32_t address);
 
 int main(void) {
 	MPU_Config();
@@ -57,7 +61,8 @@ int main(void) {
 		printf("buf_flash[%d] = %c\r\n", i, fidx2[i]);
 	}
 
-	uint32_t address = *(__IO uint32_t*)FLASH_ADDR_APP;
+	uint32_t
+	address = *(__IO uint32_t*)FLASH_ADDR_APP; // 0x24080000
 	printf("Value at address 0x%08X: 0x%08X\n", (unsigned int) FLASH_ADDR_APP,
 			(unsigned int) address);
 
@@ -66,6 +71,7 @@ int main(void) {
 		Delay_MS(3000);
 		if ((BSP_PB_GetState(BUTTON_WAKEUP) == GPIO_PIN_SET)) {
 			printf("Button `Wakeup`\r\n");
+			Jump_To_App(address);
 		}
 	}
 }
@@ -74,6 +80,36 @@ void Delay_MS(uint32_t ms) {
 	uint32_t tickstart = HAL_GetTick();
 	while ((HAL_GetTick() - tickstart) < ms) {
 		// Empty loop or low power mode
+	}
+}
+
+static void Jump_To_App(uint32_t address) {
+	uint32_t jumpAddress;
+	pFunction jumpToApplication;
+	// 256 kb, mask=0x2FFBFFFF
+	if ((address & 0x2BF7FFFF) == 0x20000000) {
+		//
+		// Disable all interrupts
+		//
+		NVIC->ICER[0] = 0xFFFFFFFF;
+		NVIC->ICER[1] = 0xFFFFFFFF;
+		NVIC->ICER[2] = 0xFFFFFFFF;
+		//
+		// Clear pendings
+		//
+		NVIC->ICPR[0] = 0xFFFFFFFF;
+		NVIC->ICPR[1] = 0xFFFFFFFF;
+		NVIC->ICPR[2] = 0xFFFFFFFF;
+
+		SysTick->CTRL = 0;  // Disable SysTick
+
+		// Set vector table
+		SCB->VTOR = (unsigned long) FLASH_ADDR_APP;
+
+		jumpAddress = *(__IO uint32_t*)(FLASH_ADDR_APP + 4);
+		jumpToApplication = (pFunction) jumpAddress;
+		__set_MSP(*(__IO uint32_t*)FLASH_ADDR_APP);
+		jumpToApplication();
 	}
 }
 

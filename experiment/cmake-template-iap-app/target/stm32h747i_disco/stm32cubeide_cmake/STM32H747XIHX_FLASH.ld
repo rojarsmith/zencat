@@ -47,8 +47,8 @@ MEMORY
   RAM_D1 (xrw)        : ORIGIN = 0x24000000, LENGTH =  512K
   /* Memory is divided. Actual start is 0x08000000 and actual length is 2048K */
   /* FLASH   (rx)        : ORIGIN = 0x08000000, LENGTH = 128K */
-  FLASH (rx)          : ORIGIN = 0x08020800, LENGTH = 447K
-  STORAGE_FLASH (rx)  : ORIGIN = 0x08020000, LENGTH = 2K
+  FLASH (rx)          : ORIGIN = 0x08040000, LENGTH = 384K
+  STORAGE_FLASH (rx)  : ORIGIN = 0x08020000, LENGTH = 128K
   /* APP0_FLASH (rx)     : ORIGIN = 0x08020800, LENGTH = 447K */
   /* APP1_FLASH (rx)     : ORIGIN = 0x08090400, LENGTH = 447K */
   DTCMRAM (xrw)       : ORIGIN = 0x20000000, LENGTH = 128K
