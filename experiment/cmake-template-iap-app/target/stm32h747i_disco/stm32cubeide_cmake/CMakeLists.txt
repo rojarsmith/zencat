@@ -85,6 +85,13 @@ set (PROJECT_INCLUDES
     ${SDK_PATH}/stm32/drivers/STM32H7xx_HAL_Driver/Inc
     )
 
+set(FLASH_ORIGIN "0x08040000" CACHE STRING "Start address of the Flash memory")
+set(FLASH_LENGTH "384K" CACHE STRING "Length of the Flash memory")
+message(STATUS "FLASH_ORIGIN: ${FLASH_ORIGIN}")
+
+configure_file(STM32H747XIHX_FLASH.ld.in ${CMAKE_BINARY_DIR}/STM32H747XIHX_FLASH.ld @ONLY)
+configure_file(STM32H747XIHX_FLASH.ld.in ${CMAKE_CURRENT_SOURCE_DIR}/STM32H747XIHX_FLASH.ld @ONLY)
+
 ############ MODIFY ACCORDING TO REQUIREMENTS) ########################
 
 #######################################################################

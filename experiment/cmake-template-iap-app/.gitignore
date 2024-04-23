@@ -1,3 +1,5 @@
+target/stm32h747i_disco/stm32cubeide_cmake/STM32H747XIHX_FLASH.ld
+
 #
 # STM32CubeIDE Project
 #
