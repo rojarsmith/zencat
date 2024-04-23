@@ -19,7 +19,8 @@
 #include "main.h"
 
 /* Private define ------------------------------------------------------------*/
-#define FLASH_ADDR_APP 0x08040000
+#define FLASH_ADDR_APP   0x08040000
+#define FLASH_ADDR_APP_1 0x080A0000
 
 /* Private typedef -----------------------------------------------------------*/
 typedef void (*pFunction)(void);
@@ -38,7 +39,8 @@ static void CPU_CACHE_Enable(void);
 static void SystemClock_Config(void);
 static void MX_USART1_UART_Init(void);
 static void Delay_MS(uint32_t ms);
-static void Jump_To_App(uint32_t address);
+static void Jump_To_App(uint32_t address, uint32_t ver);
+static void Write_To_Internal_Ver(uint8_t ver);
 
 int main(void) {
 	MPU_Config();
@@ -71,7 +73,16 @@ int main(void) {
 		Delay_MS(3000);
 		if ((BSP_PB_GetState(BUTTON_WAKEUP) == GPIO_PIN_SET)) {
 			printf("Button `Wakeup`\r\n");
-			Jump_To_App(address);
+			if (fw_info_flash[0] == 0) {
+				Write_To_Internal_Ver(1);
+				Delay_MS(500);
+				Jump_To_App(address, 0);
+			} else {
+				Write_To_Internal_Ver(0);
+				Delay_MS(500);
+				Jump_To_App(address, 1);
+			}
+//			Jump_To_App(address);
 		}
 	}
 }
@@ -83,9 +94,16 @@ void Delay_MS(uint32_t ms) {
 	}
 }
 
-static void Jump_To_App(uint32_t address) {
+static void Jump_To_App(uint32_t address, uint32_t ver) {
+	uint32_t baseAddress;
 	uint32_t jumpAddress;
 	pFunction jumpToApplication;
+
+	if (ver == 0) {
+		baseAddress = FLASH_ADDR_APP;
+	} else {
+		baseAddress = FLASH_ADDR_APP_1;
+	}
 
 	// This is testing what is AT the address,
 	// which should be an initial stack pointer,
@@ -113,13 +131,47 @@ static void Jump_To_App(uint32_t address) {
 		SysTick->CTRL = 0;  // Disable SysTick
 
 		// Set vector table
-		SCB->VTOR = (unsigned long) FLASH_ADDR_APP;
+		SCB->VTOR = (unsigned long) baseAddress;
 
-		jumpAddress = *(__IO uint32_t*)(FLASH_ADDR_APP + 4);
+		jumpAddress = *(__IO uint32_t*)(baseAddress + 4);
 		jumpToApplication = (pFunction) jumpAddress;
-		__set_MSP(*(__IO uint32_t*)FLASH_ADDR_APP);
+		__set_MSP(*(__IO uint32_t*)baseAddress);
 		jumpToApplication();
 	}
+}
+
+static void Write_To_Internal_Ver(uint8_t ver) {
+	uint8_t *flash_address = (uint8_t*) 0x08020000;
+	uint8_t sector_data[131072];
+	uint8_t *sector_data_idx = &sector_data[0];
+
+	HAL_FLASH_Unlock();
+
+	memcpy(sector_data, flash_address, 131072);
+
+	sector_data[0] = ver;
+
+	FLASH_EraseInitTypeDef EraseInitStruct;
+	uint32_t SectorError;
+	EraseInitStruct.TypeErase = FLASH_TYPEERASE_SECTORS;
+	EraseInitStruct.Sector = FLASH_SECTOR_1;
+	EraseInitStruct.Banks = FLASH_BANK_1;
+	EraseInitStruct.NbSectors = 1;
+	EraseInitStruct.VoltageRange = FLASH_VOLTAGE_RANGE_3;
+	if (HAL_FLASHEx_Erase(&EraseInitStruct, &SectorError) != HAL_OK) {
+		printf("IAP Demo - Boot - Error erase\r\n");
+	}
+
+	for (uint32_t i = 0; i < (131072 / 32); i++) {
+		uint64_t fw[4];
+		memcpy((char*) fw, sector_data_idx, 32);
+		sector_data_idx += 32;
+
+		HAL_FLASH_Program(FLASH_TYPEPROGRAM_FLASHWORD,
+				(uint32_t) (flash_address + i), (uint64_t) ((uint32_t) fw));
+	}
+
+	HAL_FLASH_Lock();
 }
 
 /**

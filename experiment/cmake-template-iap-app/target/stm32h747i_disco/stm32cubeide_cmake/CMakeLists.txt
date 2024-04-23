@@ -69,6 +69,10 @@ set (PROJECT_SOURCES
     ${SDK_PATH}/stm32/drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_uart_ex.c
 	)
 
+if(FLASH_ORIGIN)
+    add_compile_definitions(FLASH_ORIGIN=${FLASH_ORIGIN})
+endif()
+
 set (PROJECT_DEFINES
 	# LIST COMPILER DEFINITIONS HERE
     CORE_CM7

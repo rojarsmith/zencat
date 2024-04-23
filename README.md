@@ -18,3 +18,7 @@ Import --> Existing Projects into Workspace --> `experiment/cmake-template`
 Project Properties-->C/C++ Build-->Other options
 
 -DCMAKE_TOOLCHAIN_FILE=cubeide-gcc.cmake -DCMAKE_BUILD_TYPE=Debug -DSDK_PATH="C:/zencat/experiment/cmake-template-sdk"
+
+APP0: -DFLASH_ORIGIN=0x08040000
+
+APP1: -DFLASH_ORIGIN=0x080A0000

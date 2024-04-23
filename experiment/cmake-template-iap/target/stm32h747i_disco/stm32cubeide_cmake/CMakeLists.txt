@@ -60,6 +60,8 @@ set (PROJECT_SOURCES
     ${SDK_PATH}/stm32/drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_cortex.c
     ${SDK_PATH}/stm32/drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_dma.c
     ${SDK_PATH}/stm32/drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_exti.c
+    ${SDK_PATH}/stm32/drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_flash.c
+    ${SDK_PATH}/stm32/drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_flash_ex.c
     ${SDK_PATH}/stm32/drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_gpio.c
     ${SDK_PATH}/stm32/drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_pwr.c
     ${SDK_PATH}/stm32/drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_pwr_ex.c
@@ -83,6 +85,7 @@ set (PROJECT_INCLUDES
     ${SDK_PATH}/stm32/drivers/CMSIS/Include
     ${SDK_PATH}/stm32/drivers/CMSIS/Device/ST/STM32H7xx/Include
     ${SDK_PATH}/stm32/drivers/STM32H7xx_HAL_Driver/Inc
+    ${SDK_PATH}/stm32/drivers/STM32H7xx_HAL_Driver/Inc/Legacy
     )
 
 ############ MODIFY ACCORDING TO REQUIREMENTS) ########################

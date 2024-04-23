@@ -57,6 +57,9 @@ int main(void) {
 
 	for (;;) {
 		printf("IAP Demo - App\r\n");
+#if (FLASH_ORIGIN == 0x080A0000)
+		printf("Ver B\r\n");
+#endif
 		Delay_MS(3000);
 		if ((BSP_PB_GetState(BUTTON_WAKEUP) == GPIO_PIN_SET)) {
 			printf("Button `Wakeup`\r\n");
