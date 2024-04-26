@@ -20,6 +20,13 @@
 #include <stdio.h>
 #include "main.h"
 
+/**
+ * Define the FreeRTOS task priorities and stack sizes
+ */
+#define configGUI_TASK_PRIORITY ( tskIDLE_PRIORITY + 3 )
+
+#define configGUI_TASK_STK_SIZE ( 4048 )
+
 /* Private variables ---------------------------------------------------------*/
 UART_HandleTypeDef huart1;
 
@@ -27,8 +34,9 @@ UART_HandleTypeDef huart1;
 static void MPU_Config(void);
 static void CPU_CACHE_Enable(void);
 static void SystemClock_Config(void);
-static void Delay_MS(uint32_t ms);
 static void MX_USART1_UART_Init(void);
+static void GUITask(void *params);
+static void RTCTask(void *params);
 
 int main(void) {
 	/* System Init, System clock, voltage scaling and L1-Cache configuration are
@@ -59,37 +67,45 @@ int main(void) {
 	/* Initialize the LCD */
 //	BSP_LCD_Init(0, LCD_ORIENTATION_LANDSCAPE);
 //	BSP_LCD_FillRect(0, 0, 0, 800, 480, LCD_COLOR_ARGB8888_BLUE);
-
 	MX_USART1_UART_Init();
 
 	BSP_PB_Init(BUTTON_WAKEUP, BUTTON_MODE_GPIO);
 
+	xTaskCreate(GUITask, "GUITask",
+	configGUI_TASK_STK_SIZE,
+	NULL,
+	configGUI_TASK_PRIORITY,
+	NULL);
+
+	xTaskCreate(RTCTask, "RTCTask", 512,
+	NULL, configGUI_TASK_PRIORITY - 1,
+	NULL);
+
 	vTaskStartScheduler();
 
-	for(;;);
-
 	/* Loop forever */
-	for (;;) {
-		printf("IAP Demo Boot\r\n");
-		Delay_MS(3000);
-		BSP_LCD_FillRect(0, 0, 0, 800, 480, LCD_COLOR_ARGB8888_GREEN);
-		Delay_MS(3000);
-		BSP_LCD_FillRect(0, 0, 0, 800, 480, LCD_COLOR_ARGB8888_RED);
-		Delay_MS(3000);
-		BSP_LCD_FillRect(0, 0, 0, 800, 480, LCD_COLOR_ARGB8888_BLUE);
+	for (;;)
+		;
+}
 
-		// User button keep pressing.
-		// Trigger 1 time.
-		if ((BSP_PB_GetState(BUTTON_WAKEUP) == GPIO_PIN_SET)) {
-			printf("Button `Wakeup`\r\n");
-		}
+static void GUITask(void *params) {
+	const TickType_t xDelay2300ms = pdMS_TO_TICKS(2300UL);
+	TickType_t xLastWakeTime;
+
+	xLastWakeTime = xTaskGetTickCount();
+
+	for (;;) {
+		printf("GUITask running...\r\n");
+		vTaskDelayUntil(&xLastWakeTime, xDelay2300ms);
 	}
 }
 
-void Delay_MS(uint32_t ms) {
-	uint32_t tickstart = HAL_GetTick();
-	while ((HAL_GetTick() - tickstart) < ms) {
-		// Empty loop or low power mode
+static void RTCTask(void *params) {
+	const TickType_t xDelay1000ms = pdMS_TO_TICKS(1000UL);
+
+	for (;;) {
+		printf("RTCTask running...\r\n");
+		vTaskDelay(xDelay1000ms);
 	}
 }
 
