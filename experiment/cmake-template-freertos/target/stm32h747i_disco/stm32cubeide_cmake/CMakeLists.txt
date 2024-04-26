@@ -40,7 +40,7 @@ set (PROJECT_TYPE             "exe")
 set (LINKER_SCRIPT            "../STM32H747XIHX_FLASH.ld")
 set (MCPU                     "-mcpu=Cortex-M7")
 set (MFPU                 "-mfpu=fpv5-d16")
-set (MFLOAT_ABI               "")
+set (MFLOAT_ABI               ${MFLOAT_ABI_HARDWARE})
 set (RUNTIME_LIBRARY          "--specs=nano.specs")
 set (RUNTIME_LIBRARY_SYSCALLS "--specs=nosys.specs")
 
@@ -82,12 +82,21 @@ set (PROJECT_SOURCES
     ../../../drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_uart_ex.c
     ../../../drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_ll_fmc.c
     ../../../target/common/system_stm32h7xx.c
+    ../../../target/os/CMSIS_RTOS_V2/cmsis_os2.c
+    ../../../target/os/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/port.c
+    ../../../target/os/FreeRTOS/Source/portable/MemMang/heap_4.c
+    ../../../target/os/FreeRTOS/Source/event_groups.c
+    ../../../target/os/FreeRTOS/Source/list.c
+    ../../../target/os/FreeRTOS/Source/queue.c
+    ../../../target/os/FreeRTOS/Source/tasks.c
+    ../../../target/os/FreeRTOS/Source/timers.c
 	startup_stm32h747xihx.s
 	)
 
 set (PROJECT_DEFINES
 	# LIST COMPILER DEFINITIONS HERE
-
+    -DCORE_CM7
+    -DSTM32H747xx
     )
 
 set (PROJECT_INCLUDES
@@ -103,6 +112,9 @@ set (PROJECT_INCLUDES
     ../../../drivers/CMSIS/Include
     ../../../drivers/STM32H7xx_HAL_Driver/Inc
     ../../../drivers/STM32H7xx_HAL_Driver/Inc/Legacy
+    ../../../target/os/CMSIS_RTOS_V2
+    ../../../target/os/FreeRTOS/Source/include
+    ../../../target/os/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1
     )
 
 ############ MODIFY ACCORDING TO REQUIREMENTS) ########################
@@ -122,11 +134,6 @@ endif()
 
 add_compile_definitions (${PROJECT_DEFINES})
 include_directories (${PROJECT_INCLUDES})
-
-add_definitions(
-    -DCORE_CM7
-    -DSTM32H747xx
-)
 
 set (CMAKE_EXECUTABLE_SUFFIX ".elf")
 set (CMAKE_STATIC_LIBRARY_SUFFIX ".a")
