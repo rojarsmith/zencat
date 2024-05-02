@@ -37,6 +37,7 @@ typedef void (*pFunction)(void);
 UART_HandleTypeDef huart1;
 CRC_HandleTypeDef hcrc;
 DMA2D_HandleTypeDef hdma2d;
+LTDC_HandleTypeDef hltdc;
 
 //unsigned char __attribute__((section(".fw_info_section_flash"))) fw_info_flash[10] =
 //		{ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
@@ -53,6 +54,7 @@ static void GUITask(void *params);
 static void RTCTask(void *params);
 static void MX_CRC_Init(void);
 static void MX_DMA2D_Init(void);
+static void MX_LTDC_Init(void);
 
 int main(void) {
 	MPU_Config();
@@ -73,6 +75,7 @@ int main(void) {
 
 	MX_CRC_Init();
 	MX_DMA2D_Init();
+	MX_LTDC_Init();
 
 	xTaskCreate(GUITask, "GUITask",
 	configGUI_TASK_STK_SIZE,
@@ -383,6 +386,53 @@ void MX_DMA2D_Init(void) {
 	hdma2d.Init.ColorMode = DMA2D_OUTPUT_RGB565;
 	hdma2d.Init.OutputOffset = 0;
 	if (HAL_DMA2D_Init(&hdma2d) != HAL_OK) {
+		Error_Handler();
+	}
+}
+
+/**
+ * @brief LTDC Initialization Function
+ * @param None
+ * @retval None
+ */
+void MX_LTDC_Init(void) {
+	LTDC_LayerCfgTypeDef pLayerCfg = { 0 };
+
+	hltdc.Instance = LTDC;
+	hltdc.Init.HSPolarity = LTDC_HSPOLARITY_AL;
+	hltdc.Init.VSPolarity = LTDC_VSPOLARITY_AL;
+	hltdc.Init.DEPolarity = LTDC_DEPOLARITY_AL;
+	hltdc.Init.PCPolarity = LTDC_PCPOLARITY_IPC;
+	hltdc.Init.HorizontalSync = 45;
+	hltdc.Init.VerticalSync = 22;
+	hltdc.Init.AccumulatedHBP = 47;
+	hltdc.Init.AccumulatedVBP = 24;
+	hltdc.Init.AccumulatedActiveW = 847;
+	hltdc.Init.AccumulatedActiveH = 504;
+	hltdc.Init.TotalWidth = 1057;
+	hltdc.Init.TotalHeigh = 526;
+	hltdc.Init.Backcolor.Blue = 0;
+	hltdc.Init.Backcolor.Green = 0;
+	hltdc.Init.Backcolor.Red = 0;
+	if (HAL_LTDC_Init(&hltdc) != HAL_OK) {
+		Error_Handler();
+	}
+	pLayerCfg.WindowX0 = 0;
+	pLayerCfg.WindowX1 = 800;
+	pLayerCfg.WindowY0 = 0;
+	pLayerCfg.WindowY1 = 480;
+	pLayerCfg.PixelFormat = LTDC_PIXEL_FORMAT_RGB565;
+	pLayerCfg.Alpha = 255;
+	pLayerCfg.Alpha0 = 0;
+	pLayerCfg.BlendingFactor1 = LTDC_BLENDING_FACTOR1_CA;
+	pLayerCfg.BlendingFactor2 = LTDC_BLENDING_FACTOR2_CA;
+	pLayerCfg.FBStartAdress = 0;
+	pLayerCfg.ImageWidth = 800;
+	pLayerCfg.ImageHeight = 480;
+	pLayerCfg.Backcolor.Blue = 0;
+	pLayerCfg.Backcolor.Green = 0;
+	pLayerCfg.Backcolor.Red = 0;
+	if (HAL_LTDC_ConfigLayer(&hltdc, &pLayerCfg, 0) != HAL_OK) {
 		Error_Handler();
 	}
 }
