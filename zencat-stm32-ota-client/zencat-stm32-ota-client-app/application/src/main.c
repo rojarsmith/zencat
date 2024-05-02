@@ -35,6 +35,7 @@ typedef void (*pFunction)(void);
 
 /* Private variables ---------------------------------------------------------*/
 UART_HandleTypeDef huart1;
+CRC_HandleTypeDef hcrc;
 
 //unsigned char __attribute__((section(".fw_info_section_flash"))) fw_info_flash[10] =
 //		{ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
@@ -46,6 +47,7 @@ static void MPU_Config(void);
 static void CPU_CACHE_Enable(void);
 static void SystemClock_Config(void);
 static void MX_USART1_UART_Init(void);
+static void MX_CRC_Init(void);
 static void Jump_To_Boot(uint32_t address);
 static void GUITask(void *params);
 static void RTCTask(void *params);
@@ -66,6 +68,8 @@ int main(void) {
 #else
 	SCB->VTOR = (unsigned long) FLASH_ADDR_APP_1;
 #endif
+
+	MX_CRC_Init();
 
 	xTaskCreate(GUITask, "GUITask",
 	configGUI_TASK_STK_SIZE,
@@ -344,6 +348,23 @@ static void MX_USART1_UART_Init(void) {
 	huart1.Init.OneBitSampling = UART_ONE_BIT_SAMPLE_DISABLE;
 	huart1.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT;
 	if (HAL_UART_Init(&huart1) != HAL_OK) {
+		Error_Handler();
+	}
+}
+
+/**
+ * @brief CRC Initialization Function
+ * @param None
+ * @retval None
+ */
+static void MX_CRC_Init(void) {
+	hcrc.Instance = CRC;
+	hcrc.Init.DefaultPolynomialUse = DEFAULT_POLYNOMIAL_ENABLE;
+	hcrc.Init.DefaultInitValueUse = DEFAULT_INIT_VALUE_ENABLE;
+	hcrc.Init.InputDataInversionMode = CRC_INPUTDATA_INVERSION_NONE;
+	hcrc.Init.OutputDataInversionMode = CRC_OUTPUTDATA_INVERSION_DISABLE;
+	hcrc.InputDataFormat = CRC_INPUTDATA_FORMAT_BYTES;
+	if (HAL_CRC_Init(&hcrc) != HAL_OK) {
 		Error_Handler();
 	}
 }
