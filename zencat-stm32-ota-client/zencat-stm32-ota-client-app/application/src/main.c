@@ -19,7 +19,16 @@
 #include "main.h"
 
 /* Private define ------------------------------------------------------------*/
-#define FLASH_ADDR_APP 0x08000000
+#define FLASH_ADDR_BOOTLOADER 0x08000000
+#define FLASH_ADDR_APP_0      0x08040000
+#define FLASH_ADDR_APP_1      0x080A0000
+
+/**
+ * Define the FreeRTOS task priorities and stack sizes
+ */
+#define configGUI_TASK_PRIORITY ( tskIDLE_PRIORITY + 3 )
+
+#define configGUI_TASK_STK_SIZE ( 4048 )
 
 /* Private typedef -----------------------------------------------------------*/
 typedef void (*pFunction)(void);
@@ -37,8 +46,9 @@ static void MPU_Config(void);
 static void CPU_CACHE_Enable(void);
 static void SystemClock_Config(void);
 static void MX_USART1_UART_Init(void);
-static void Delay_MS(uint32_t ms);
 static void Jump_To_Boot(uint32_t address);
+static void GUITask(void *params);
+static void RTCTask(void *params);
 
 int main(void) {
 	MPU_Config();
@@ -50,29 +60,28 @@ int main(void) {
 
 	BSP_PB_Init(BUTTON_WAKEUP, BUTTON_MODE_GPIO);
 
-	uint32_t
-	address = *(__IO uint32_t*)FLASH_ADDR_APP; // 0x24080000
-	printf("Value at address 0x%08X: 0x%08X\n", (unsigned int) FLASH_ADDR_APP,
-			(unsigned int) address);
-
-	for (;;) {
-		printf("IAP Demo - App\r\n");
-#if (FLASH_ORIGIN == 0x080A0000)
-		printf("Ver B\r\n");
+	// FreeRTOS shift
+#if (FLASH_ORIGIN == 0x08040000)
+	SCB->VTOR = (unsigned long) FLASH_ADDR_APP_0;
+#else
+	SCB->VTOR = (unsigned long) FLASH_ADDR_APP_1;
 #endif
-		Delay_MS(3000);
-		if ((BSP_PB_GetState(BUTTON_WAKEUP) == GPIO_PIN_SET)) {
-			printf("Button `Wakeup`\r\n");
-			Jump_To_Boot(address);
-		}
-	}
-}
 
-void Delay_MS(uint32_t ms) {
-	uint32_t tickstart = HAL_GetTick();
-	while ((HAL_GetTick() - tickstart) < ms) {
-		// Empty loop or low power mode
-	}
+	xTaskCreate(GUITask, "GUITask",
+	configGUI_TASK_STK_SIZE,
+	NULL,
+	configGUI_TASK_PRIORITY,
+	NULL);
+
+	xTaskCreate(RTCTask, "RTCTask", 512,
+	NULL, configGUI_TASK_PRIORITY - 1,
+	NULL);
+
+	vTaskStartScheduler();
+
+	/* Loop forever */
+	for (;;)
+		;
 }
 
 static void Jump_To_Boot(uint32_t address) {
@@ -105,12 +114,45 @@ static void Jump_To_Boot(uint32_t address) {
 		SysTick->CTRL = 0;  // Disable SysTick
 
 		// Set vector table
-		SCB->VTOR = (unsigned long) FLASH_ADDR_APP;
+		SCB->VTOR = (unsigned long) FLASH_ADDR_BOOTLOADER;
 
-		jumpAddress = *(__IO uint32_t*)(FLASH_ADDR_APP + 4);
+		jumpAddress = *(__IO uint32_t*)(FLASH_ADDR_BOOTLOADER + 4);
 		jumpToApplication = (pFunction) jumpAddress;
-		__set_MSP(*(__IO uint32_t*)FLASH_ADDR_APP);
+		__set_MSP(*(__IO uint32_t*)FLASH_ADDR_BOOTLOADER);
 		jumpToApplication();
+	}
+}
+
+static void GUITask(void *params) {
+	const TickType_t xDelay2300ms = pdMS_TO_TICKS(2300UL);
+	TickType_t xLastWakeTime;
+
+	xLastWakeTime = xTaskGetTickCount();
+
+	for (;;) {
+		printf("GUITask running...\r\n");
+		vTaskDelayUntil(&xLastWakeTime, xDelay2300ms);
+	}
+}
+
+static void RTCTask(void *params) {
+	uint32_t
+	address = *(__IO uint32_t*)FLASH_ADDR_BOOTLOADER; // 0x24080000
+	printf("Value at address 0x%08X: 0x%08X\n",
+			(unsigned int) FLASH_ADDR_BOOTLOADER, (unsigned int) address);
+
+	const TickType_t xDelay1000ms = pdMS_TO_TICKS(1000UL);
+
+	for (;;) {
+		printf("RTCTask running...\r\n");
+		vTaskDelay(xDelay1000ms);
+#if (FLASH_ORIGIN == 0x080A0000)
+		printf("Ver B\r\n");
+#endif
+		if ((BSP_PB_GetState(BUTTON_WAKEUP) == GPIO_PIN_SET)) {
+			printf("Button `Wakeup`\r\n");
+			Jump_To_Boot(address);
+		}
 	}
 }
 

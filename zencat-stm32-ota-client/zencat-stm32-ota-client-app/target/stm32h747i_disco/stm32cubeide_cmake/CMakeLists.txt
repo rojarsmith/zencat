@@ -39,8 +39,8 @@ set (PROJECT_NAME             "zencat-stm32-ota-client-app")
 set (PROJECT_TYPE             "exe")
 set (LINKER_SCRIPT            "../STM32H747XIHX_FLASH.ld")
 set (MCPU                     "-mcpu=Cortex-M7")
-set (MFPU                 "-mfpu=fpv5-d16")
-set (MFLOAT_ABI               "")
+set (MFPU                     "-mfpu=fpv5-d16")
+set (MFLOAT_ABI               ${MFLOAT_ABI_HARDWARE})
 set (RUNTIME_LIBRARY          "--specs=nano.specs")
 set (RUNTIME_LIBRARY_SYSCALLS "--specs=nosys.specs")
 
@@ -55,6 +55,14 @@ set (PROJECT_SOURCES
 	${BASE_PROJECT_DIR}/application/src/stm32h7xx_it.c
 	${BASE_PROJECT_DIR}/application/src/syscalls.c
 	${BASE_PROJECT_DIR}/common/Src/system_stm32h7xx_dualcore_boot_cm4_cm7.c
+	${BASE_PROJECT_DIR}/library/CMSIS_RTOS_V2/cmsis_os2.c
+	${SDK_PATH}/rtos/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/port.c
+    ${SDK_PATH}/rtos/FreeRTOS/Source/portable/MemMang/heap_4.c
+    ${SDK_PATH}/rtos/FreeRTOS/Source/event_groups.c
+    ${SDK_PATH}/rtos/FreeRTOS/Source/list.c
+    ${SDK_PATH}/rtos/FreeRTOS/Source/queue.c
+    ${SDK_PATH}/rtos/FreeRTOS/Source/tasks.c
+    ${SDK_PATH}/rtos/FreeRTOS/Source/timers.c
 	${SDK_PATH}/stm32/drivers/BSP/STM32H747I-DISCO/stm32h747i_discovery.c
 	${SDK_PATH}/stm32/drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal.c
     ${SDK_PATH}/stm32/drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_cortex.c
@@ -82,6 +90,9 @@ set (PROJECT_DEFINES
 set (PROJECT_INCLUDES
 	# LIST INCLUDE DIRECTORIES HERE
     ${BASE_PROJECT_DIR}/application/inc
+    ${BASE_PROJECT_DIR}/library/CMSIS_RTOS_V2
+    ${SDK_PATH}/rtos/FreeRTOS/Source/include
+    ${SDK_PATH}/rtos/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1
     ${SDK_PATH}/stm32/drivers/BSP/Components/is42s32800j
     ${SDK_PATH}/stm32/drivers/BSP/STM32H747I-DISCO
     ${SDK_PATH}/stm32/drivers/CMSIS/Include
