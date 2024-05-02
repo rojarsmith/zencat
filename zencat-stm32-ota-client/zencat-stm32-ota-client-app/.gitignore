@@ -1,0 +1,56 @@
+target/stm32h747i_disco/stm32cubeide_cmake/STM32H747XIHX_FLASH.ld
+
+#
+# STM32CubeIDE Project
+#
+
+.settings/
+.metadata/
+
+Debug/
+debug/
+Release/
+release
+
+*.launch
+
+# Prerequisites
+*.d
+
+# Object files
+*.o
+*.ko
+*.obj
+*.elf
+
+# Linker output
+*.ilk
+*.map
+*.exp
+
+# Libraries
+*.lib
+# *.a
+*.la
+*.lo
+
+# Shared objects
+*.dll
+*.so
+*.so.*
+*.dylib
+
+# Executables
+*.exe
+*.out
+*.app
+*.i*86
+*.x86_64
+*.hex
+*.bin
+
+# Debug files
+*.dSYM/
+*.su
+*.idb
+*.pdb
