@@ -36,6 +36,7 @@ typedef void (*pFunction)(void);
 /* Private variables ---------------------------------------------------------*/
 UART_HandleTypeDef huart1;
 CRC_HandleTypeDef hcrc;
+DMA2D_HandleTypeDef hdma2d;
 
 //unsigned char __attribute__((section(".fw_info_section_flash"))) fw_info_flash[10] =
 //		{ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
@@ -47,10 +48,11 @@ static void MPU_Config(void);
 static void CPU_CACHE_Enable(void);
 static void SystemClock_Config(void);
 static void MX_USART1_UART_Init(void);
-static void MX_CRC_Init(void);
 static void Jump_To_Boot(uint32_t address);
 static void GUITask(void *params);
 static void RTCTask(void *params);
+static void MX_CRC_Init(void);
+static void MX_DMA2D_Init(void);
 
 int main(void) {
 	MPU_Config();
@@ -70,6 +72,7 @@ int main(void) {
 #endif
 
 	MX_CRC_Init();
+	MX_DMA2D_Init();
 
 	xTaskCreate(GUITask, "GUITask",
 	configGUI_TASK_STK_SIZE,
@@ -365,6 +368,21 @@ static void MX_CRC_Init(void) {
 	hcrc.Init.OutputDataInversionMode = CRC_OUTPUTDATA_INVERSION_DISABLE;
 	hcrc.InputDataFormat = CRC_INPUTDATA_FORMAT_BYTES;
 	if (HAL_CRC_Init(&hcrc) != HAL_OK) {
+		Error_Handler();
+	}
+}
+
+/**
+ * @brief DMA2D Initialization Function
+ * @param None
+ * @retval None
+ */
+void MX_DMA2D_Init(void) {
+	hdma2d.Instance = DMA2D;
+	hdma2d.Init.Mode = DMA2D_R2M;
+	hdma2d.Init.ColorMode = DMA2D_OUTPUT_RGB565;
+	hdma2d.Init.OutputOffset = 0;
+	if (HAL_DMA2D_Init(&hdma2d) != HAL_OK) {
 		Error_Handler();
 	}
 }
