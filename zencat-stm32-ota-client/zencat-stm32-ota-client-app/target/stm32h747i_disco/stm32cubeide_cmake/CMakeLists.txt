@@ -63,7 +63,9 @@ set (PROJECT_SOURCES
     ${SDK_PATH}/rtos/FreeRTOS/Source/queue.c
     ${SDK_PATH}/rtos/FreeRTOS/Source/tasks.c
     ${SDK_PATH}/rtos/FreeRTOS/Source/timers.c
+    ${SDK_PATH}/stm32/drivers/BSP/Components/mt25tl01g/mt25tl01g.c
 	${SDK_PATH}/stm32/drivers/BSP/STM32H747I-DISCO/stm32h747i_discovery.c
+	${SDK_PATH}/stm32/drivers/BSP/STM32H747I-DISCO/stm32h747i_discovery_qspi.c
 	${SDK_PATH}/stm32/drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal.c
     ${SDK_PATH}/stm32/drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_cortex.c
     ${SDK_PATH}/stm32/drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_crc.c
@@ -73,8 +75,10 @@ set (PROJECT_SOURCES
     ${SDK_PATH}/stm32/drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_exti.c
     ${SDK_PATH}/stm32/drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_gpio.c
     ${SDK_PATH}/stm32/drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_ltdc.c
+    ${SDK_PATH}/stm32/drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_mdma.c
     ${SDK_PATH}/stm32/drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_pwr.c
     ${SDK_PATH}/stm32/drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_pwr_ex.c
+    ${SDK_PATH}/stm32/drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_qspi.c
     ${SDK_PATH}/stm32/drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_rcc.c
     ${SDK_PATH}/stm32/drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_rcc_ex.c
     ${SDK_PATH}/stm32/drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_uart.c
@@ -98,6 +102,7 @@ set (PROJECT_INCLUDES
     ${SDK_PATH}/rtos/FreeRTOS/Source/include
     ${SDK_PATH}/rtos/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1
     ${SDK_PATH}/stm32/drivers/BSP/Components/is42s32800j
+    ${SDK_PATH}/stm32/drivers/BSP/Components/mt25tl01g
     ${SDK_PATH}/stm32/drivers/BSP/STM32H747I-DISCO
     ${SDK_PATH}/stm32/drivers/CMSIS/Include
     ${SDK_PATH}/stm32/drivers/CMSIS/Device/ST/STM32H7xx/Include

@@ -38,6 +38,7 @@ UART_HandleTypeDef huart1;
 CRC_HandleTypeDef hcrc;
 DMA2D_HandleTypeDef hdma2d;
 LTDC_HandleTypeDef hltdc;
+QSPI_HandleTypeDef hqspi;
 
 //unsigned char __attribute__((section(".fw_info_section_flash"))) fw_info_flash[10] =
 //		{ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
@@ -55,6 +56,7 @@ static void RTCTask(void *params);
 static void MX_CRC_Init(void);
 static void MX_DMA2D_Init(void);
 static void MX_LTDC_Init(void);
+static void MX_QUADSPI_Init(void);
 
 int main(void) {
 	MPU_Config();
@@ -76,6 +78,7 @@ int main(void) {
 	MX_CRC_Init();
 	MX_DMA2D_Init();
 	MX_LTDC_Init();
+	MX_QUADSPI_Init();
 
 	xTaskCreate(GUITask, "GUITask",
 	configGUI_TASK_STK_SIZE,
@@ -435,6 +438,46 @@ void MX_LTDC_Init(void) {
 	if (HAL_LTDC_ConfigLayer(&hltdc, &pLayerCfg, 0) != HAL_OK) {
 		Error_Handler();
 	}
+}
+
+/**
+ * @brief QUADSPI Initialization Function
+ * @param None
+ * @retval None
+ */
+static void MX_QUADSPI_Init(void) {
+
+	/* USER CODE BEGIN QUADSPI_Init 0 */
+
+	/* USER CODE END QUADSPI_Init 0 */
+
+	/* USER CODE BEGIN QUADSPI_Init 1 */
+
+	/* USER CODE END QUADSPI_Init 1 */
+	/* QUADSPI parameter configuration*/
+	hqspi.Instance = QUADSPI;
+	hqspi.Init.ClockPrescaler = 3;
+	hqspi.Init.FifoThreshold = 1;
+	hqspi.Init.SampleShifting = QSPI_SAMPLE_SHIFTING_NONE;
+	hqspi.Init.FlashSize = 1;
+	hqspi.Init.ChipSelectHighTime = QSPI_CS_HIGH_TIME_1_CYCLE;
+	hqspi.Init.ClockMode = QSPI_CLOCK_MODE_0;
+	hqspi.Init.DualFlash = QSPI_DUALFLASH_ENABLE;
+	if (HAL_QSPI_Init(&hqspi) != HAL_OK) {
+		Error_Handler();
+	}
+	/* USER CODE BEGIN QUADSPI_Init 2 */
+	BSP_QSPI_Init_t init;
+	init.InterfaceMode = MT25TL01G_QPI_MODE;
+	init.TransferRate = MT25TL01G_DTR_TRANSFER;
+	init.DualFlashMode = MT25TL01G_DUALFLASH_ENABLE;
+	if (BSP_QSPI_Init(0, &init) != BSP_ERROR_NONE) {
+		Error_Handler();
+	}
+	if (BSP_QSPI_EnableMemoryMappedMode(0) != BSP_ERROR_NONE) {
+		Error_Handler();
+	}
+	/* USER CODE END QUADSPI_Init 2 */
 }
 
 /**

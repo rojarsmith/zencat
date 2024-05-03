@@ -25,6 +25,7 @@
 #include <stdio.h>
 #include "stm32h7xx_hal.h"
 #include "stm32h747i_discovery.h"
+#include "stm32h747i_discovery_qspi.h"
 #include "stm32h747i_discovery_sdram.h"
 #include "FreeRTOS.h"
 #include "task.h"
