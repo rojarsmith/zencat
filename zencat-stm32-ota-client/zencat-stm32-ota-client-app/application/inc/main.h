@@ -34,9 +34,21 @@
 void Error_Handler(void);
 
 /* Private defines -----------------------------------------------------------*/
+#define LCD_BL_Pin GPIO_PIN_12
+#define LCD_BL_GPIO_Port GPIOJ
+#define LCD_RESET_Pin GPIO_PIN_3
+#define LCD_RESET_GPIO_Port GPIOG
+#define MCU_ACTIVE_Pin GPIO_PIN_8
+#define MCU_ACTIVE_GPIO_Port GPIOF
+#define FRAME_RATE_Pin GPIO_PIN_9
+#define FRAME_RATE_GPIO_Port GPIOJ
+#define RENDER_TIME_Pin GPIO_PIN_8
+#define RENDER_TIME_GPIO_Port GPIOJ
 #define VCP_TX_Pin GPIO_PIN_9
 #define VCP_TX_GPIO_Port GPIOA
 #define VCP_RX_Pin GPIO_PIN_7
 #define VCP_RX_GPIO_Port GPIOB
+#define VSYNC_FREQ_Pin GPIO_PIN_3
+#define VSYNC_FREQ_GPIO_Port GPIOJ
 
 #endif /* __MAIN_H */
