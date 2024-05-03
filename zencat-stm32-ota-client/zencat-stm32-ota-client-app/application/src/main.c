@@ -66,6 +66,13 @@ static void MX_LTDC_Init(void);
 static void MX_QUADSPI_Init(void);
 
 int main(void) {
+	// shift for HAL, FMC, FreeRTOS
+#if (FLASH_ORIGIN == 0x08040000)
+	SCB->VTOR = (unsigned long) FLASH_ADDR_APP_0;
+#else
+	SCB->VTOR = (unsigned long) FLASH_ADDR_APP_1;
+#endif
+
 	MPU_Config();
 	CPU_CACHE_Enable();
 	HAL_Init();
@@ -80,20 +87,12 @@ int main(void) {
 
 	BSP_PB_Init(BUTTON_WAKEUP, BUTTON_MODE_GPIO);
 
-	// FreeRTOS shift
-#if (FLASH_ORIGIN == 0x08040000)
-	SCB->VTOR = (unsigned long) FLASH_ADDR_APP_0;
-#else
-	SCB->VTOR = (unsigned long) FLASH_ADDR_APP_1;
-#endif
-
 	MX_GPIO_Init();
 	MX_CRC_Init();
-//	MX_FMC_Init();
+	MX_FMC_Init();
 	MX_DMA2D_Init();
 	MX_LTDC_Init();
 	MX_QUADSPI_Init();
-	MX_FMC_Init();
 
 	xTaskCreate(GUITask, "GUITask",
 	configGUI_TASK_STK_SIZE,
@@ -464,7 +463,7 @@ static void MX_CRC_Init(void) {
 void MX_FMC_Init(void) {
 
 	/* USER CODE BEGIN FMC_Init 0 */
-	return;
+
 	/* USER CODE END FMC_Init 0 */
 
 	FMC_SDRAM_TimingTypeDef SdramTiming = { 0 };

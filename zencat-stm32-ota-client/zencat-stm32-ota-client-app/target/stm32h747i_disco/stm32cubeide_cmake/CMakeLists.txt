@@ -52,6 +52,7 @@ set (PROJECT_SOURCES
 	startup_stm32h747xihx.s
 	${BASE_PROJECT_DIR}/application/src/main.c
 	${BASE_PROJECT_DIR}/application/src/stm32h7xx_hal_msp.c
+	${BASE_PROJECT_DIR}/application/src/stm32h7xx_hal_timebase_tim.c
 	${BASE_PROJECT_DIR}/application/src/stm32h7xx_it.c
 	${BASE_PROJECT_DIR}/application/src/syscalls.c
 	${BASE_PROJECT_DIR}/common/Src/system_stm32h7xx_dualcore_boot_cm4_cm7.c
@@ -85,6 +86,8 @@ set (PROJECT_SOURCES
     ${SDK_PATH}/stm32/drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_rcc.c
     ${SDK_PATH}/stm32/drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_rcc_ex.c
     ${SDK_PATH}/stm32/drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_sdram.c
+    ${SDK_PATH}/stm32/drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_tim.c
+    ${SDK_PATH}/stm32/drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_tim_ex.c
     ${SDK_PATH}/stm32/drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_uart.c
     ${SDK_PATH}/stm32/drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_uart_ex.c
     ${SDK_PATH}/stm32/drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_ll_fmc.c

@@ -19,6 +19,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "stm32h7xx_it.h"
+#include "cmsis_os2.h"
 
 /** @addtogroup STM32H7xx_HAL_Examples
  * @{
@@ -122,7 +123,7 @@ void DebugMon_Handler(void) {
  * @retval None
  */
 //void SysTick_Handler(void) {
-//	HAL_IncTick();
+//	osSystickHandler();
 //}
 
 /******************************************************************************/
