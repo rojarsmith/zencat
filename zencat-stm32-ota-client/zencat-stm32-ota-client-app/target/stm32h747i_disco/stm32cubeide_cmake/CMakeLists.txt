@@ -64,6 +64,7 @@ set (PROJECT_SOURCES
     ${SDK_PATH}/rtos/FreeRTOS/Source/queue.c
     ${SDK_PATH}/rtos/FreeRTOS/Source/tasks.c
     ${SDK_PATH}/rtos/FreeRTOS/Source/timers.c
+    ${SDK_PATH}/stm32/drivers/BSP/Components/ft6x06/ft6x06.c
     ${SDK_PATH}/stm32/drivers/BSP/Components/is42s32800j/is42s32800j.c
     ${SDK_PATH}/stm32/drivers/BSP/Components/mt25tl01g/mt25tl01g.c
 	${SDK_PATH}/stm32/drivers/BSP/STM32H747I-DISCO/stm32h747i_discovery.c
@@ -109,6 +110,7 @@ set (PROJECT_INCLUDES
     ${BASE_PROJECT_DIR}/library/CMSIS_RTOS_V2
     ${SDK_PATH}/rtos/FreeRTOS/Source/include
     ${SDK_PATH}/rtos/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1
+    ${SDK_PATH}/stm32/drivers/BSP/Components/ft6x06
     ${SDK_PATH}/stm32/drivers/BSP/Components/is42s32800j
     ${SDK_PATH}/stm32/drivers/BSP/Components/mt25tl01g
     ${SDK_PATH}/stm32/drivers/BSP/STM32H747I-DISCO
