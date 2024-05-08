@@ -36,6 +36,8 @@
 
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
+/* External variables --------------------------------------------------------*/
+extern DSI_HandleTypeDef hdsi;
 
 /******************************************************************************/
 /*            Cortex-M7 Processor Exceptions Handlers                         */
@@ -100,7 +102,6 @@ void UsageFault_Handler(void) {
  */
 //void SVC_Handler(void) {
 //}
-
 /**
  * @brief  This function handles Debug Monitor exception.
  * @param  None
@@ -116,7 +117,6 @@ void DebugMon_Handler(void) {
  */
 //void PendSV_Handler(void) {
 //}
-
 /**
  * @brief  This function handles SysTick Handler.
  * @param  None
@@ -125,7 +125,6 @@ void DebugMon_Handler(void) {
 //void SysTick_Handler(void) {
 //	osSystickHandler();
 //}
-
 /******************************************************************************/
 /*                 STM32H7xx Peripherals Interrupt Handlers                   */
 /*  Add here the Interrupt Handler for the used peripheral(s) (PPP), for the  */
@@ -225,6 +224,19 @@ void DCMI_IRQHandler(void) {
  * @retval None
  */
 void DMA2_Stream3_IRQHandler(void) {
+}
+
+/**
+ * @brief This function handles DSI global Interrupt.
+ */
+void DSI_IRQHandler(void) {
+	/* USER CODE BEGIN DSI_IRQn 0 */
+
+	/* USER CODE END DSI_IRQn 0 */
+	HAL_DSI_IRQHandler(&hdsi);
+	/* USER CODE BEGIN DSI_IRQn 1 */
+
+	/* USER CODE END DSI_IRQn 1 */
 }
 
 /**

@@ -56,6 +56,7 @@ void SDMMC1_IRQHandler(void);
 void DCMI_IRQHandler(void);
 void DMA2_Stream3_IRQHandler(void);
 void AUDIO_IN_SAIx_DMAx_IRQHandler(void);
+void DSI_IRQHandler(void);
 #ifdef __cplusplus
 }
 #endif
