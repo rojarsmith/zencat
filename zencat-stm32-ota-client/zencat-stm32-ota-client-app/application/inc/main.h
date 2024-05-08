@@ -27,11 +27,17 @@
 #include "stm32h747i_discovery.h"
 #include "stm32h747i_discovery_qspi.h"
 #include "stm32h747i_discovery_sdram.h"
+#include "otm8009a.h"
 #include "FreeRTOS.h"
 #include "task.h"
 
 /* Exported functions ------------------------------------------------------- */
 void Error_Handler(void);
+
+extern int32_t DSI_IO_Write(uint16_t ChannelNbr, uint16_t Reg, uint8_t *pData,
+		uint16_t Size);
+extern int32_t DSI_IO_Read(uint16_t ChannelNbr, uint16_t Reg, uint8_t *pData,
+		uint16_t Size);
 
 /* Private defines -----------------------------------------------------------*/
 #define LCD_BL_Pin GPIO_PIN_12
