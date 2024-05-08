@@ -42,7 +42,8 @@ CRC_HandleTypeDef hcrc;
 DMA2D_HandleTypeDef hdma2d;
 DSI_HandleTypeDef hdsi;
 JPEG_HandleTypeDef hjpeg;
-
+MDMA_HandleTypeDef hmdma_jpeg_infifo_th;
+MDMA_HandleTypeDef hmdma_jpeg_outfifo_th;
 LTDC_HandleTypeDef hltdc;
 QSPI_HandleTypeDef hqspi;
 SDRAM_HandleTypeDef hsdram1;
@@ -62,6 +63,7 @@ static void Jump_To_Boot(uint32_t address);
 static void GUITask(void *params);
 static void RTCTask(void *params);
 static void MX_GPIO_Init(void);
+static void MX_MDMA_Init(void);
 static void MX_CRC_Init(void);
 static void MX_FMC_Init(void);
 static void MX_DMA2D_Init(void);
@@ -93,6 +95,7 @@ int main(void) {
 	BSP_PB_Init(BUTTON_WAKEUP, BUTTON_MODE_GPIO);
 
 	MX_GPIO_Init();
+	MX_MDMA_Init();
 	MX_CRC_Init();
 	MX_FMC_Init();
 	MX_DMA2D_Init();
@@ -447,6 +450,22 @@ static void MX_GPIO_Init(void) {
 
 	/* USER CODE BEGIN MX_GPIO_Init_2 */
 	/* USER CODE END MX_GPIO_Init_2 */
+}
+
+/**
+ * Enable MDMA controller clock
+ */
+static void MX_MDMA_Init(void) {
+
+	/* MDMA controller clock enable */
+	__HAL_RCC_MDMA_CLK_ENABLE();
+	/* Local variables */
+
+	/* MDMA interrupt initialization */
+	/* MDMA_IRQn interrupt configuration */
+	HAL_NVIC_SetPriority(MDMA_IRQn, 5, 0);
+	HAL_NVIC_EnableIRQ(MDMA_IRQn);
+
 }
 
 /**

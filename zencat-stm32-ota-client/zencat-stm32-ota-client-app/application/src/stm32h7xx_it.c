@@ -38,6 +38,8 @@
 /* Private functions ---------------------------------------------------------*/
 /* External variables --------------------------------------------------------*/
 extern DSI_HandleTypeDef hdsi;
+extern MDMA_HandleTypeDef hmdma_jpeg_infifo_th;
+extern MDMA_HandleTypeDef hmdma_jpeg_outfifo_th;
 
 /******************************************************************************/
 /*            Cortex-M7 Processor Exceptions Handlers                         */
@@ -200,6 +202,8 @@ void AUDIO_IN_SAI_PDMx_DMAx_IRQHandler(void) {
  * @retval None
  */
 void MDMA_IRQHandler(void) {
+	HAL_MDMA_IRQHandler(&hmdma_jpeg_outfifo_th);
+	HAL_MDMA_IRQHandler(&hmdma_jpeg_infifo_th);
 }
 
 /**
