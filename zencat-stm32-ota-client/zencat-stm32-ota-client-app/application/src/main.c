@@ -41,6 +41,7 @@ typedef void (*pFunction)(void);
 UART_HandleTypeDef huart1;
 CRC_HandleTypeDef hcrc;
 DMA2D_HandleTypeDef hdma2d;
+JPEG_HandleTypeDef hjpeg;
 LTDC_HandleTypeDef hltdc;
 QSPI_HandleTypeDef hqspi;
 SDRAM_HandleTypeDef hsdram1;
@@ -64,6 +65,7 @@ static void MX_FMC_Init(void);
 static void MX_DMA2D_Init(void);
 static void MX_LTDC_Init(void);
 static void MX_QUADSPI_Init(void);
+static void MX_JPEG_Init(void);
 
 int main(void) {
 	// shift for HAL, FMC, FreeRTOS
@@ -93,6 +95,7 @@ int main(void) {
 	MX_DMA2D_Init();
 	MX_LTDC_Init();
 	MX_QUADSPI_Init();
+	MX_JPEG_Init();
 
 	xTaskCreate(GUITask, "GUITask",
 	configGUI_TASK_STK_SIZE,
@@ -607,6 +610,30 @@ static void MX_QUADSPI_Init(void) {
 		Error_Handler();
 	}
 	/* USER CODE END QUADSPI_Init 2 */
+}
+
+/**
+ * @brief JPEG Initialization Function
+ * @param None
+ * @retval None
+ */
+static void MX_JPEG_Init(void) {
+
+	/* USER CODE BEGIN JPEG_Init 0 */
+
+	/* USER CODE END JPEG_Init 0 */
+
+	/* USER CODE BEGIN JPEG_Init 1 */
+
+	/* USER CODE END JPEG_Init 1 */
+	hjpeg.Instance = JPEG;
+	if (HAL_JPEG_Init(&hjpeg) != HAL_OK) {
+		Error_Handler();
+	}
+	/* USER CODE BEGIN JPEG_Init 2 */
+
+	/* USER CODE END JPEG_Init 2 */
+
 }
 
 /**

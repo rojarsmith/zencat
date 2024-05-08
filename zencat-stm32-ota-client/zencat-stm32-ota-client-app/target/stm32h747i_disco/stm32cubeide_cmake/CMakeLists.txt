@@ -80,6 +80,7 @@ set (PROJECT_SOURCES
     ${SDK_PATH}/stm32/drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_exti.c
     ${SDK_PATH}/stm32/drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_gpio.c
     ${SDK_PATH}/stm32/drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_hsem.c
+    ${SDK_PATH}/stm32/drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_jpeg.c
     ${SDK_PATH}/stm32/drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_ltdc.c
     ${SDK_PATH}/stm32/drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_mdma.c
     ${SDK_PATH}/stm32/drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_pwr.c
