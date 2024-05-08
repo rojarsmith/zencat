@@ -67,6 +67,7 @@ set (PROJECT_SOURCES
     ${SDK_PATH}/stm32/drivers/BSP/Components/ft6x06/ft6x06.c
     ${SDK_PATH}/stm32/drivers/BSP/Components/is42s32800j/is42s32800j.c
     ${SDK_PATH}/stm32/drivers/BSP/Components/mt25tl01g/mt25tl01g.c
+    ${SDK_PATH}/stm32/drivers/BSP/Components/otm8009a/otm8009a.c
 	${SDK_PATH}/stm32/drivers/BSP/STM32H747I-DISCO/stm32h747i_discovery.c
 	${SDK_PATH}/stm32/drivers/BSP/STM32H747I-DISCO/stm32h747i_discovery_qspi.c
 	${SDK_PATH}/stm32/drivers/BSP/STM32H747I-DISCO/stm32h747i_discovery_sdram.c
@@ -113,6 +114,7 @@ set (PROJECT_INCLUDES
     ${SDK_PATH}/stm32/drivers/BSP/Components/ft6x06
     ${SDK_PATH}/stm32/drivers/BSP/Components/is42s32800j
     ${SDK_PATH}/stm32/drivers/BSP/Components/mt25tl01g
+    ${SDK_PATH}/stm32/drivers/BSP/Components/otm8009a
     ${SDK_PATH}/stm32/drivers/BSP/STM32H747I-DISCO
     ${SDK_PATH}/stm32/drivers/CMSIS/Include
     ${SDK_PATH}/stm32/drivers/CMSIS/Device/ST/STM32H7xx/Include
