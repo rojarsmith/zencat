@@ -113,6 +113,7 @@ int main(void) {
 	MX_CRC_Init();
 	MX_JPEG_Init();
 	MX_TouchGFX_Init();
+	MX_TouchGFX_PreOSInit();
 
 	xTaskCreate(GUITask, "GUITask",
 	configGUI_TASK_STK_SIZE,
