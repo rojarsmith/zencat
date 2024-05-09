@@ -20,9 +20,14 @@
 #ifndef __MAIN_H
 #define __MAIN_H
 
-/* Includes ------------------------------------------------------------------*/
 #include <stdint.h>
 #include <stdio.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+/* Includes ------------------------------------------------------------------*/
 #include "stm32h7xx_hal.h"
 #include "stm32h747i_discovery.h"
 #include "stm32h747i_discovery_qspi.h"
@@ -30,6 +35,7 @@
 #include "otm8009a.h"
 #include "FreeRTOS.h"
 #include "task.h"
+#include "app_touchgfx.h"
 
 /* Exported functions ------------------------------------------------------- */
 void Error_Handler(void);
@@ -56,5 +62,9 @@ extern int32_t DSI_IO_Read(uint16_t ChannelNbr, uint16_t Reg, uint8_t *pData,
 #define VCP_RX_GPIO_Port GPIOB
 #define VSYNC_FREQ_Pin GPIO_PIN_3
 #define VSYNC_FREQ_GPIO_Port GPIOJ
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* __MAIN_H */

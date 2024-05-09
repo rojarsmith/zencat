@@ -40,5 +40,10 @@
 			<type>2</type>
 			<locationURI>PARENT-3-PROJECT_LOC/common</locationURI>
 		</link>
+		<link>
+			<name>gui</name>
+			<type>2</type>
+			<locationURI>PARENT-3-PROJECT_LOC/gui</locationURI>
+		</link>
 	</linkedResources>
 </projectDescription>

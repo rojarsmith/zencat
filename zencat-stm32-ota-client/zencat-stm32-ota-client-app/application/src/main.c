@@ -104,6 +104,8 @@ int main(void) {
 	MX_QUADSPI_Init();
 	MX_JPEG_Init();
 
+	MX_TouchGFX_Init();
+
 	xTaskCreate(GUITask, "GUITask",
 	configGUI_TASK_STK_SIZE,
 	NULL,
