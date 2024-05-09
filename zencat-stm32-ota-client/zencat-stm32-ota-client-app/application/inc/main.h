@@ -30,12 +30,13 @@ extern "C" {
 /* Includes ------------------------------------------------------------------*/
 #include "stm32h7xx_hal.h"
 #include "stm32h747i_discovery.h"
+#include "stm32h747i_discovery_bus.h"
 #include "stm32h747i_discovery_qspi.h"
 #include "stm32h747i_discovery_sdram.h"
 #include "otm8009a.h"
-#include "FreeRTOS.h"
-#include "task.h"
-#include "app_touchgfx.h"
+//#include "FreeRTOS.h"
+//#include "task.h"
+//#include "app_touchgfx.h"
 
 /* Exported functions ------------------------------------------------------- */
 void Error_Handler(void);
@@ -46,6 +47,11 @@ extern int32_t DSI_IO_Read(uint16_t ChannelNbr, uint16_t Reg, uint8_t *pData,
 		uint16_t Size);
 
 /* Private defines -----------------------------------------------------------*/
+#define VCP_TX_Pin GPIO_PIN_9
+#define VCP_TX_GPIO_Port GPIOA
+#define VCP_RX_Pin GPIO_PIN_7
+#define VCP_RX_GPIO_Port GPIOB
+
 #define LCD_BL_Pin GPIO_PIN_12
 #define LCD_BL_GPIO_Port GPIOJ
 #define LCD_RESET_Pin GPIO_PIN_3
@@ -56,10 +62,6 @@ extern int32_t DSI_IO_Read(uint16_t ChannelNbr, uint16_t Reg, uint8_t *pData,
 #define FRAME_RATE_GPIO_Port GPIOJ
 #define RENDER_TIME_Pin GPIO_PIN_8
 #define RENDER_TIME_GPIO_Port GPIOJ
-#define VCP_TX_Pin GPIO_PIN_9
-#define VCP_TX_GPIO_Port GPIOA
-#define VCP_RX_Pin GPIO_PIN_7
-#define VCP_RX_GPIO_Port GPIOB
 #define VSYNC_FREQ_Pin GPIO_PIN_3
 #define VSYNC_FREQ_GPIO_Port GPIOJ
 

@@ -68,6 +68,7 @@ set (PROJECT_SOURCES
 	${BASE_PROJECT_DIR}/application/src/stm32h7xx_hal_timebase_tim.c
 	${BASE_PROJECT_DIR}/application/src/stm32h7xx_it.c
 	${BASE_PROJECT_DIR}/application/src/syscalls.c
+	${BASE_PROJECT_DIR}/application/src/sysmem.c
 	${BASE_PROJECT_DIR}/common/Src/system_stm32h7xx_dualcore_boot_cm4_cm7.c
 	${BASE_PROJECT_DIR}/gui/TouchGFX/App/app_touchgfx.c
 	${CPP_SRC_TGFX_GEN}
@@ -85,6 +86,7 @@ set (PROJECT_SOURCES
     ${SDK_PATH}/stm32/drivers/BSP/Components/is42s32800j/is42s32800j.c
     ${SDK_PATH}/stm32/drivers/BSP/Components/mt25tl01g/mt25tl01g.c
     ${SDK_PATH}/stm32/drivers/BSP/Components/otm8009a/otm8009a.c
+    ${SDK_PATH}/stm32/drivers/BSP/Components/otm8009a/otm8009a_reg.c
 	${SDK_PATH}/stm32/drivers/BSP/STM32H747I-DISCO/stm32h747i_discovery.c
 	${SDK_PATH}/stm32/drivers/BSP/STM32H747I-DISCO/stm32h747i_discovery_bus.c
 	${SDK_PATH}/stm32/drivers/BSP/STM32H747I-DISCO/stm32h747i_discovery_qspi.c
@@ -126,6 +128,12 @@ set (PROJECT_DEFINES
 	# LIST COMPILER DEFINITIONS HERE
     CORE_CM7
     STM32H747xx
+    ST
+    USE_BPP=24
+    USE_HAL_DRIVER
+    USE_STM32H747I_DISCO
+    USE_PWR_LDO_SUPPLY__N
+    USE_FLOATING_POINT 
     )
 
 set (PROJECT_INCLUDES

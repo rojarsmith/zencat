@@ -17,6 +17,8 @@
  */
 
 #include "main.h"
+#include "cmsis_os.h"
+#include "app_touchgfx.h"
 
 /* Private define ------------------------------------------------------------*/
 #define FLASH_ADDR_BOOTLOADER 0x08000000
@@ -48,6 +50,9 @@ LTDC_HandleTypeDef hltdc;
 QSPI_HandleTypeDef hqspi;
 SDRAM_HandleTypeDef hsdram1;
 UART_HandleTypeDef huart1;
+
+OTM8009A_Object_t OTM8009AObj;
+OTM8009A_IO_t IOCtx;
 
 //unsigned char __attribute__((section(".fw_info_section_flash"))) fw_info_flash[10] =
 //		{ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
@@ -84,6 +89,10 @@ int main(void) {
 	CPU_CACHE_Enable();
 	HAL_Init();
 	SystemClock_Config();
+
+	/* When system initialization is finished, Cortex-M7 will release Cortex-M4 by means of
+	 HSEM notification */
+	/*HW semaphore Clock enable*/
 	__HAL_RCC_HSEM_CLK_ENABLE();
 	/*Take HSEM */
 	HAL_HSEM_FastTake(HSEM_ID_0);
@@ -96,14 +105,13 @@ int main(void) {
 
 	MX_GPIO_Init();
 	MX_MDMA_Init();
-	MX_CRC_Init();
 	MX_FMC_Init();
+	MX_QUADSPI_Init();
 	MX_DMA2D_Init();
 	MX_DSIHOST_DSI_Init();
 	MX_LTDC_Init();
-	MX_QUADSPI_Init();
+	MX_CRC_Init();
 	MX_JPEG_Init();
-
 	MX_TouchGFX_Init();
 
 	xTaskCreate(GUITask, "GUITask",
@@ -203,57 +211,69 @@ static void RTCTask(void *params) {
  * @retval None
  */
 static void MPU_Config(void) {
-	MPU_Region_InitTypeDef MPU_InitStruct;
+	MPU_Region_InitTypeDef MPU_InitStruct = { 0 };
 
-	/* Disable the MPU */
+	/* Disables the MPU */
 	HAL_MPU_Disable();
 
-	/* Configure the MPU as Strongly ordered for not defined regions */
+	/** Initializes and configures the Region and the memory to be protected
+	 */
 	MPU_InitStruct.Enable = MPU_REGION_ENABLE;
-	MPU_InitStruct.BaseAddress = 0x00;
-	MPU_InitStruct.Size = MPU_REGION_SIZE_4GB;
-	MPU_InitStruct.AccessPermission = MPU_REGION_NO_ACCESS;
-	MPU_InitStruct.IsBufferable = MPU_ACCESS_NOT_BUFFERABLE;
-	MPU_InitStruct.IsCacheable = MPU_ACCESS_NOT_CACHEABLE;
-	MPU_InitStruct.IsShareable = MPU_ACCESS_SHAREABLE;
 	MPU_InitStruct.Number = MPU_REGION_NUMBER0;
+	MPU_InitStruct.BaseAddress = 0x90000000;
+	MPU_InitStruct.Size = MPU_REGION_SIZE_256MB;
+	MPU_InitStruct.SubRegionDisable = 0x0;
 	MPU_InitStruct.TypeExtField = MPU_TEX_LEVEL0;
-	MPU_InitStruct.SubRegionDisable = 0x87;
+	MPU_InitStruct.AccessPermission = MPU_REGION_FULL_ACCESS;
+	MPU_InitStruct.DisableExec = MPU_INSTRUCTION_ACCESS_DISABLE;
+	MPU_InitStruct.IsShareable = MPU_ACCESS_NOT_SHAREABLE;
+	MPU_InitStruct.IsCacheable = MPU_ACCESS_NOT_CACHEABLE;
+	MPU_InitStruct.IsBufferable = MPU_ACCESS_NOT_BUFFERABLE;
+
+	HAL_MPU_ConfigRegion(&MPU_InitStruct);
+
+	/** Initializes and configures the Region and the memory to be protected
+	 */
+	MPU_InitStruct.Number = MPU_REGION_NUMBER1;
+	MPU_InitStruct.Size = MPU_REGION_SIZE_128MB;
+
+	HAL_MPU_ConfigRegion(&MPU_InitStruct);
+
+	/** Initializes and configures the Region and the memory to be protected
+	 */
+	MPU_InitStruct.Number = MPU_REGION_NUMBER2;
+	MPU_InitStruct.BaseAddress = 0xD0000000;
+	MPU_InitStruct.Size = MPU_REGION_SIZE_32MB;
+	MPU_InitStruct.IsCacheable = MPU_ACCESS_CACHEABLE;
+
+	HAL_MPU_ConfigRegion(&MPU_InitStruct);
+
+	/** Initializes and configures the Region and the memory to be protected
+	 */
+	MPU_InitStruct.Number = MPU_REGION_NUMBER3;
+	MPU_InitStruct.BaseAddress = 0x24000000;
+	MPU_InitStruct.Size = MPU_REGION_SIZE_512KB;
+	MPU_InitStruct.DisableExec = MPU_INSTRUCTION_ACCESS_ENABLE;
+
+	HAL_MPU_ConfigRegion(&MPU_InitStruct);
+
+	/** Initializes and configures the Region and the memory to be protected
+	 */
+	MPU_InitStruct.Number = MPU_REGION_NUMBER4;
+	MPU_InitStruct.BaseAddress = 0x10000000;
+	MPU_InitStruct.Size = MPU_REGION_SIZE_256KB;
+
+	HAL_MPU_ConfigRegion(&MPU_InitStruct);
+
+	/** Initializes and configures the Region and the memory to be protected
+	 */
+	MPU_InitStruct.Number = MPU_REGION_NUMBER5;
+	MPU_InitStruct.BaseAddress = 0x10040000;
+	MPU_InitStruct.Size = MPU_REGION_SIZE_32KB;
 	MPU_InitStruct.DisableExec = MPU_INSTRUCTION_ACCESS_DISABLE;
 
 	HAL_MPU_ConfigRegion(&MPU_InitStruct);
-
-	/* Configure the MPU attributes as WT for SDRAM */
-	MPU_InitStruct.Enable = MPU_REGION_ENABLE;
-	MPU_InitStruct.BaseAddress = SDRAM_DEVICE_ADDR;
-	MPU_InitStruct.Size = MPU_REGION_SIZE_32MB;
-	MPU_InitStruct.AccessPermission = MPU_REGION_FULL_ACCESS;
-	MPU_InitStruct.IsBufferable = MPU_ACCESS_NOT_BUFFERABLE;
-	MPU_InitStruct.IsCacheable = MPU_ACCESS_CACHEABLE;
-	MPU_InitStruct.IsShareable = MPU_ACCESS_NOT_SHAREABLE;
-	MPU_InitStruct.Number = MPU_REGION_NUMBER1;
-	MPU_InitStruct.TypeExtField = MPU_TEX_LEVEL0;
-	MPU_InitStruct.SubRegionDisable = 0x00;
-	MPU_InitStruct.DisableExec = MPU_INSTRUCTION_ACCESS_ENABLE;
-
-	HAL_MPU_ConfigRegion(&MPU_InitStruct);
-
-	/* Configure the MPU QSPI flash */
-	MPU_InitStruct.Enable = MPU_REGION_ENABLE;
-	MPU_InitStruct.BaseAddress = 0x90000000;
-	MPU_InitStruct.Size = MPU_REGION_SIZE_128MB;
-	MPU_InitStruct.AccessPermission = MPU_REGION_FULL_ACCESS;
-	MPU_InitStruct.IsBufferable = MPU_ACCESS_NOT_BUFFERABLE;
-	MPU_InitStruct.IsCacheable = MPU_ACCESS_CACHEABLE;
-	MPU_InitStruct.IsShareable = MPU_ACCESS_NOT_SHAREABLE;
-	MPU_InitStruct.Number = MPU_REGION_NUMBER2;
-	MPU_InitStruct.TypeExtField = MPU_TEX_LEVEL0;
-	MPU_InitStruct.SubRegionDisable = 0x0;
-	MPU_InitStruct.DisableExec = MPU_INSTRUCTION_ACCESS_ENABLE;
-
-	HAL_MPU_ConfigRegion(&MPU_InitStruct);
-
-	/* Enable the MPU */
+	/* Enables the MPU */
 	HAL_MPU_Enable(MPU_PRIVILEGED_DEFAULT);
 }
 
@@ -321,7 +341,7 @@ static void SystemClock_Config(void) {
 	RCC_OscInitStruct.PLL.PLLFRACN = 0;
 	RCC_OscInitStruct.PLL.PLLP = 2;
 	RCC_OscInitStruct.PLL.PLLR = 2;
-	RCC_OscInitStruct.PLL.PLLQ = 4;
+	RCC_OscInitStruct.PLL.PLLQ = 2;
 
 	RCC_OscInitStruct.PLL.PLLVCOSEL = RCC_PLL1VCOWIDE;
 	RCC_OscInitStruct.PLL.PLLRGE = RCC_PLL1VCIRANGE_2;
@@ -543,7 +563,7 @@ void MX_FMC_Init(void) {
 void MX_DMA2D_Init(void) {
 	hdma2d.Instance = DMA2D;
 	hdma2d.Init.Mode = DMA2D_R2M;
-	hdma2d.Init.ColorMode = DMA2D_OUTPUT_RGB565;
+	hdma2d.Init.ColorMode = DMA2D_OUTPUT_RGB888;
 	hdma2d.Init.OutputOffset = 0;
 	if (HAL_DMA2D_Init(&hdma2d) != HAL_OK) {
 		Error_Handler();
@@ -657,22 +677,30 @@ static void MX_DSIHOST_DSI_Init(void) {
  * @param None
  * @retval None
  */
-void MX_LTDC_Init(void) {
+static void MX_LTDC_Init(void) {
+
+	/* USER CODE BEGIN LTDC_Init 0 */
+
+	/* USER CODE END LTDC_Init 0 */
+
 	LTDC_LayerCfgTypeDef pLayerCfg = { 0 };
 
+	/* USER CODE BEGIN LTDC_Init 1 */
+
+	/* USER CODE END LTDC_Init 1 */
 	hltdc.Instance = LTDC;
-	hltdc.Init.HSPolarity = LTDC_HSPOLARITY_AL;
-	hltdc.Init.VSPolarity = LTDC_VSPOLARITY_AL;
+	hltdc.Init.HSPolarity = LTDC_HSPOLARITY_AH;
+	hltdc.Init.VSPolarity = LTDC_VSPOLARITY_AH;
 	hltdc.Init.DEPolarity = LTDC_DEPOLARITY_AL;
 	hltdc.Init.PCPolarity = LTDC_PCPOLARITY_IPC;
-	hltdc.Init.HorizontalSync = 45;
-	hltdc.Init.VerticalSync = 22;
-	hltdc.Init.AccumulatedHBP = 47;
-	hltdc.Init.AccumulatedVBP = 24;
-	hltdc.Init.AccumulatedActiveW = 847;
-	hltdc.Init.AccumulatedActiveH = 504;
-	hltdc.Init.TotalWidth = 1057;
-	hltdc.Init.TotalHeigh = 526;
+	hltdc.Init.HorizontalSync = 0;
+	hltdc.Init.VerticalSync = 0;
+	hltdc.Init.AccumulatedHBP = 2;
+	hltdc.Init.AccumulatedVBP = 2;
+	hltdc.Init.AccumulatedActiveW = 402;
+	hltdc.Init.AccumulatedActiveH = 482;
+	hltdc.Init.TotalWidth = 403;
+	hltdc.Init.TotalHeigh = 483;
 	hltdc.Init.Backcolor.Blue = 0;
 	hltdc.Init.Backcolor.Green = 0;
 	hltdc.Init.Backcolor.Red = 0;
@@ -680,16 +708,16 @@ void MX_LTDC_Init(void) {
 		Error_Handler();
 	}
 	pLayerCfg.WindowX0 = 0;
-	pLayerCfg.WindowX1 = 800;
+	pLayerCfg.WindowX1 = 400;
 	pLayerCfg.WindowY0 = 0;
 	pLayerCfg.WindowY1 = 480;
-	pLayerCfg.PixelFormat = LTDC_PIXEL_FORMAT_RGB565;
+	pLayerCfg.PixelFormat = LTDC_PIXEL_FORMAT_RGB888;
 	pLayerCfg.Alpha = 255;
 	pLayerCfg.Alpha0 = 0;
-	pLayerCfg.BlendingFactor1 = LTDC_BLENDING_FACTOR1_CA;
-	pLayerCfg.BlendingFactor2 = LTDC_BLENDING_FACTOR2_CA;
-	pLayerCfg.FBStartAdress = 0;
-	pLayerCfg.ImageWidth = 800;
+	pLayerCfg.BlendingFactor1 = LTDC_BLENDING_FACTOR1_PAxCA;
+	pLayerCfg.BlendingFactor2 = LTDC_BLENDING_FACTOR2_PAxCA;
+	pLayerCfg.FBStartAdress = 0xD0000000;
+	pLayerCfg.ImageWidth = 400;
 	pLayerCfg.ImageHeight = 480;
 	pLayerCfg.Backcolor.Blue = 0;
 	pLayerCfg.Backcolor.Green = 0;
@@ -697,6 +725,44 @@ void MX_LTDC_Init(void) {
 	if (HAL_LTDC_ConfigLayer(&hltdc, &pLayerCfg, 0) != HAL_OK) {
 		Error_Handler();
 	}
+	/* USER CODE BEGIN LTDC_Init 2 */
+
+	/* Configure DSI PHY HS2LP and LP2HS timings */
+
+	__HAL_LTDC_DISABLE(&hltdc);
+	DSI_LPCmdTypeDef LPCmd;
+
+	HAL_DSI_Start(&hdsi);
+
+	/* Configure the audio driver */
+	IOCtx.Address = 0;
+	IOCtx.GetTick = BSP_GetTick;
+	IOCtx.WriteReg = DSI_IO_Write;
+	IOCtx.ReadReg = DSI_IO_Read;
+	OTM8009A_RegisterBusIO(&OTM8009AObj, &IOCtx);
+
+	OTM8009A_Init(&OTM8009AObj, OTM8009A_FORMAT_RGB888,
+			OTM8009A_ORIENTATION_LANDSCAPE);
+	HAL_DSI_ShortWrite(&hdsi, 0, DSI_DCS_SHORT_PKT_WRITE_P1,
+			OTM8009A_CMD_DISPOFF, 0x00);
+
+	LPCmd.LPGenShortWriteNoP = DSI_LP_GSW0P_DISABLE;
+	LPCmd.LPGenShortWriteOneP = DSI_LP_GSW1P_DISABLE;
+	LPCmd.LPGenShortWriteTwoP = DSI_LP_GSW2P_DISABLE;
+	LPCmd.LPGenShortReadNoP = DSI_LP_GSR0P_DISABLE;
+	LPCmd.LPGenShortReadOneP = DSI_LP_GSR1P_DISABLE;
+	LPCmd.LPGenShortReadTwoP = DSI_LP_GSR2P_DISABLE;
+	LPCmd.LPGenLongWrite = DSI_LP_GLW_DISABLE;
+	LPCmd.LPDcsShortWriteNoP = DSI_LP_DSW0P_DISABLE;
+	LPCmd.LPDcsShortWriteOneP = DSI_LP_DSW1P_DISABLE;
+	LPCmd.LPDcsShortReadNoP = DSI_LP_DSR0P_DISABLE;
+	LPCmd.LPDcsLongWrite = DSI_LP_DLW_DISABLE;
+	HAL_DSI_ConfigCommand(&hdsi, &LPCmd);
+
+	HAL_LTDC_SetPitch(&hltdc, 800, 0);
+	__HAL_LTDC_ENABLE(&hltdc);
+	/* USER CODE END LTDC_Init 2 */
+
 }
 
 /**
