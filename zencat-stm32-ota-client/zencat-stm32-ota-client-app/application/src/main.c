@@ -54,6 +54,15 @@ UART_HandleTypeDef huart1;
 OTM8009A_Object_t OTM8009AObj;
 OTM8009A_IO_t IOCtx;
 
+/* Definitions for TouchGFXTask */
+osThreadId_t guiTaskHandle;
+const osThreadAttr_t guiTask_attributes = { .name = "GUITask", .stack_size =
+		3048 * 4, .priority = (osPriority_t) osPriorityNormal, };
+/* Definitions for videoTask */
+osThreadId_t rtcTaskHandle;
+const osThreadAttr_t rtcTask_attributes = { .name = "RTCTask", .stack_size =
+		1000 * 4, .priority = (osPriority_t) osPriorityLow, };
+
 //unsigned char __attribute__((section(".fw_info_section_flash"))) fw_info_flash[10] =
 //		{ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 //unsigned char __attribute__((section(".fw_info2_section_flash"))) fw_info2_flash[10] =
@@ -115,17 +124,28 @@ int main(void) {
 	MX_TouchGFX_Init();
 	MX_TouchGFX_PreOSInit();
 
-	xTaskCreate(GUITask, "GUITask",
-	configGUI_TASK_STK_SIZE,
-	NULL,
-	configGUI_TASK_PRIORITY,
-	NULL);
+//	xTaskCreate(GUITask, "GUITask",
+//	configGUI_TASK_STK_SIZE,
+//	NULL,
+//	configGUI_TASK_PRIORITY,
+//	NULL);
+//
+//	xTaskCreate(RTCTask, "RTCTask", 512,
+//	NULL, configGUI_TASK_PRIORITY - 1,
+//	NULL);
+//
+//	vTaskStartScheduler();
 
-	xTaskCreate(RTCTask, "RTCTask", 512,
-	NULL, configGUI_TASK_PRIORITY - 1,
-	NULL);
+	osKernelInitialize();
 
-	vTaskStartScheduler();
+	/* creation of TouchGFXTask */
+	guiTaskHandle = osThreadNew(GUITask, NULL,
+			&guiTask_attributes);
+
+	/* creation of videoTask */
+	rtcTaskHandle = osThreadNew(RTCTask, NULL, &rtcTask_attributes);
+
+	osKernelStart();
 
 	/* Loop forever */
 	for (;;)
