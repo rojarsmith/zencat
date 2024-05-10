@@ -49,8 +49,8 @@ extern int32_t DSI_IO_Read(uint16_t ChannelNbr, uint16_t Reg, uint8_t *pData,
 /* Private defines -----------------------------------------------------------*/
 #define VCP_TX_Pin GPIO_PIN_9
 #define VCP_TX_GPIO_Port GPIOA
-#define VCP_RX_Pin GPIO_PIN_7
-#define VCP_RX_GPIO_Port GPIOB
+#define VCP_RX_Pin GPIO_PIN_10
+#define VCP_RX_GPIO_Port GPIOA
 
 #define LCD_BL_Pin GPIO_PIN_12
 #define LCD_BL_GPIO_Port GPIOJ

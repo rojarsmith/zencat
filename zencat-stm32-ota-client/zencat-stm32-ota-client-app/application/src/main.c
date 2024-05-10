@@ -139,8 +139,10 @@ int main(void) {
 	osKernelInitialize();
 
 	/* creation of TouchGFXTask */
+//	guiTaskHandle = osThreadNew(TouchGFX_Task, NULL,
+//			&guiTask_attributes);
 	guiTaskHandle = osThreadNew(GUITask, NULL,
-			&guiTask_attributes);
+				&guiTask_attributes);
 
 	/* creation of videoTask */
 	rtcTaskHandle = osThreadNew(RTCTask, NULL, &rtcTask_attributes);
@@ -191,6 +193,7 @@ static void Jump_To_Boot(uint32_t address) {
 	}
 }
 
+__attribute__((unused))
 static void GUITask(void *params) {
 	const TickType_t xDelay2300ms = pdMS_TO_TICKS(2300UL);
 	TickType_t xLastWakeTime;
@@ -203,6 +206,7 @@ static void GUITask(void *params) {
 	}
 }
 
+__attribute__((unused))
 static void RTCTask(void *params) {
 	uint32_t
 	address = *(__IO uint32_t*)FLASH_ADDR_BOOTLOADER; // 0x24080000
