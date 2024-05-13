@@ -63,6 +63,7 @@ message(STATUS "CPP_SRC_TGFX_TAR: ${CPP_SRC_TGFX_TAR}")
 set (PROJECT_SOURCES
 	# LIST SOURCE FILES HERE
 	startup_stm32h747xihx.s
+	${BASE_PROJECT_DIR}/application/src/freertos.c
 	${BASE_PROJECT_DIR}/application/src/main.c
 	${BASE_PROJECT_DIR}/application/src/stm32h7xx_hal_msp.c
 	${BASE_PROJECT_DIR}/application/src/stm32h7xx_hal_timebase_tim.c

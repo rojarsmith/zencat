@@ -28,9 +28,9 @@
 /**
  * Define the FreeRTOS task priorities and stack sizes
  */
-#define configGUI_TASK_PRIORITY ( tskIDLE_PRIORITY + 3 )
+//#define configGUI_TASK_PRIORITY ( tskIDLE_PRIORITY + 3 )
 
-#define configGUI_TASK_STK_SIZE ( 4048 )
+//#define configGUI_TASK_STK_SIZE ( 4048 )
 
 /* Private typedef -----------------------------------------------------------*/
 #ifndef HSEM_ID_0
@@ -73,9 +73,6 @@ static void MPU_Config(void);
 static void CPU_CACHE_Enable(void);
 static void SystemClock_Config(void);
 static void MX_USART1_UART_Init(void);
-static void Jump_To_Boot(uint32_t address);
-static void GUITask(void *params);
-static void RTCTask(void *params);
 static void MX_GPIO_Init(void);
 static void MX_MDMA_Init(void);
 static void MX_CRC_Init(void);
@@ -85,6 +82,9 @@ static void MX_DSIHOST_DSI_Init(void);
 static void MX_LTDC_Init(void);
 static void MX_QUADSPI_Init(void);
 static void MX_JPEG_Init(void);
+static void Jump_To_Boot(uint32_t address);
+static void GUITask(void *params);
+static void RTCTask(void *params);
 
 int main(void) {
 	// shift for HAL, FMC, FreeRTOS

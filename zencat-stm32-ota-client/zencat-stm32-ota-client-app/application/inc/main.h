@@ -33,6 +33,7 @@ extern "C" {
 #include "stm32h747i_discovery_bus.h"
 #include "stm32h747i_discovery_qspi.h"
 #include "stm32h747i_discovery_sdram.h"
+#include "stm32h747i_discovery_errno.h"
 #include "otm8009a.h"
 //#include "FreeRTOS.h"
 //#include "task.h"
