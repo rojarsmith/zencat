@@ -77,9 +77,11 @@ set (PROJECT_SOURCES
 	${BASE_PROJECT_DIR}/library/CMSIS_RTOS_V2/cmsis_os2.c
 	${SDK_PATH}/rtos/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/port.c
     ${SDK_PATH}/rtos/FreeRTOS/Source/portable/MemMang/heap_4.c
+    ${SDK_PATH}/rtos/FreeRTOS/Source/croutine.c
     ${SDK_PATH}/rtos/FreeRTOS/Source/event_groups.c
     ${SDK_PATH}/rtos/FreeRTOS/Source/list.c
     ${SDK_PATH}/rtos/FreeRTOS/Source/queue.c
+    ${SDK_PATH}/rtos/FreeRTOS/Source/stream_buffer.c
     ${SDK_PATH}/rtos/FreeRTOS/Source/tasks.c
     ${SDK_PATH}/rtos/FreeRTOS/Source/timers.c
     ${SDK_PATH}/stm32/drivers/BSP/Components/ft6x06/ft6x06.c
