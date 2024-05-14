@@ -83,6 +83,7 @@ static void MX_JPEG_Init(void);
 static void Jump_To_Boot(uint32_t address);
 static void GUITask(void *params);
 static void RTCTask(void *params);
+void TouchGFX_Task(void *argument);
 
 int main(void) {
 	// shift for HAL, FMC, FreeRTOS
@@ -137,8 +138,8 @@ int main(void) {
 	osKernelInitialize();
 
 	/* creation of TouchGFXTask */
-//	guiTaskHandle = osThreadNew(TouchGFX_Task, NULL, &guiTask_attributes);
-	guiTaskHandle = osThreadNew(GUITask, NULL, &guiTask_attributes);
+	guiTaskHandle = osThreadNew(TouchGFX_Task, NULL, &guiTask_attributes);
+//	guiTaskHandle = osThreadNew(GUITask, NULL, &guiTask_attributes);
 
 	/* creation of videoTask */
 	rtcTaskHandle = osThreadNew(RTCTask, NULL, &rtcTask_attributes);
@@ -471,6 +472,30 @@ static void MX_DSIHOST_DSI_Init(void) {
 }
 
 /**
+ * @brief JPEG Initialization Function
+ * @param None
+ * @retval None
+ */
+static void MX_JPEG_Init(void) {
+
+	/* USER CODE BEGIN JPEG_Init 0 */
+
+	/* USER CODE END JPEG_Init 0 */
+
+	/* USER CODE BEGIN JPEG_Init 1 */
+
+	/* USER CODE END JPEG_Init 1 */
+	hjpeg.Instance = JPEG;
+	if (HAL_JPEG_Init(&hjpeg) != HAL_OK) {
+		Error_Handler();
+	}
+	/* USER CODE BEGIN JPEG_Init 2 */
+
+	/* USER CODE END JPEG_Init 2 */
+
+}
+
+/**
  * @brief LTDC Initialization Function
  * @param None
  * @retval None
@@ -601,30 +626,6 @@ static void MX_QUADSPI_Init(void) {
 		Error_Handler();
 	}
 	/* USER CODE END QUADSPI_Init 2 */
-}
-
-/**
- * @brief JPEG Initialization Function
- * @param None
- * @retval None
- */
-static void MX_JPEG_Init(void) {
-
-	/* USER CODE BEGIN JPEG_Init 0 */
-
-	/* USER CODE END JPEG_Init 0 */
-
-	/* USER CODE BEGIN JPEG_Init 1 */
-
-	/* USER CODE END JPEG_Init 1 */
-	hjpeg.Instance = JPEG;
-	if (HAL_JPEG_Init(&hjpeg) != HAL_OK) {
-		Error_Handler();
-	}
-	/* USER CODE BEGIN JPEG_Init 2 */
-
-	/* USER CODE END JPEG_Init 2 */
-
 }
 
 /**
