@@ -29,9 +29,7 @@
  * Define the FreeRTOS task priorities and stack sizes
  */
 //#define configGUI_TASK_PRIORITY ( tskIDLE_PRIORITY + 3 )
-
 //#define configGUI_TASK_STK_SIZE ( 4048 )
-
 /* Private typedef -----------------------------------------------------------*/
 #ifndef HSEM_ID_0
 #define HSEM_ID_0 (0U) /* HW semaphore 0*/
@@ -139,8 +137,7 @@ int main(void) {
 	osKernelInitialize();
 
 	/* creation of TouchGFXTask */
-//	guiTaskHandle = osThreadNew(TouchGFX_Task, NULL,
-//			&guiTask_attributes);
+//	guiTaskHandle = osThreadNew(TouchGFX_Task, NULL, &guiTask_attributes);
 	guiTaskHandle = osThreadNew(GUITask, NULL, &guiTask_attributes);
 
 	/* creation of videoTask */
@@ -228,80 +225,6 @@ static void RTCTask(void *params) {
 }
 
 /**
- * @brief  Configure the MPU attributes as Write Through for SDRAM.
- * @note   The Base Address is SDRAM_DEVICE_ADDR.
- *         The Region Size is 32MB.
- * @param  None
- * @retval None
- */
-static void MPU_Config(void) {
-	MPU_Region_InitTypeDef MPU_InitStruct = { 0 };
-
-	/* Disables the MPU */
-	HAL_MPU_Disable();
-
-	/** Initializes and configures the Region and the memory to be protected
-	 */
-	MPU_InitStruct.Enable = MPU_REGION_ENABLE;
-	MPU_InitStruct.Number = MPU_REGION_NUMBER0;
-	MPU_InitStruct.BaseAddress = 0x90000000;
-	MPU_InitStruct.Size = MPU_REGION_SIZE_256MB;
-	MPU_InitStruct.SubRegionDisable = 0x0;
-	MPU_InitStruct.TypeExtField = MPU_TEX_LEVEL0;
-	MPU_InitStruct.AccessPermission = MPU_REGION_FULL_ACCESS;
-	MPU_InitStruct.DisableExec = MPU_INSTRUCTION_ACCESS_DISABLE;
-	MPU_InitStruct.IsShareable = MPU_ACCESS_NOT_SHAREABLE;
-	MPU_InitStruct.IsCacheable = MPU_ACCESS_NOT_CACHEABLE;
-	MPU_InitStruct.IsBufferable = MPU_ACCESS_NOT_BUFFERABLE;
-
-	HAL_MPU_ConfigRegion(&MPU_InitStruct);
-
-	/** Initializes and configures the Region and the memory to be protected
-	 */
-	MPU_InitStruct.Number = MPU_REGION_NUMBER1;
-	MPU_InitStruct.Size = MPU_REGION_SIZE_128MB;
-
-	HAL_MPU_ConfigRegion(&MPU_InitStruct);
-
-	/** Initializes and configures the Region and the memory to be protected
-	 */
-	MPU_InitStruct.Number = MPU_REGION_NUMBER2;
-	MPU_InitStruct.BaseAddress = 0xD0000000;
-	MPU_InitStruct.Size = MPU_REGION_SIZE_32MB;
-	MPU_InitStruct.IsCacheable = MPU_ACCESS_CACHEABLE;
-
-	HAL_MPU_ConfigRegion(&MPU_InitStruct);
-
-	/** Initializes and configures the Region and the memory to be protected
-	 */
-	MPU_InitStruct.Number = MPU_REGION_NUMBER3;
-	MPU_InitStruct.BaseAddress = 0x24000000;
-	MPU_InitStruct.Size = MPU_REGION_SIZE_512KB;
-	MPU_InitStruct.DisableExec = MPU_INSTRUCTION_ACCESS_ENABLE;
-
-	HAL_MPU_ConfigRegion(&MPU_InitStruct);
-
-	/** Initializes and configures the Region and the memory to be protected
-	 */
-	MPU_InitStruct.Number = MPU_REGION_NUMBER4;
-	MPU_InitStruct.BaseAddress = 0x10000000;
-	MPU_InitStruct.Size = MPU_REGION_SIZE_256KB;
-
-	HAL_MPU_ConfigRegion(&MPU_InitStruct);
-
-	/** Initializes and configures the Region and the memory to be protected
-	 */
-	MPU_InitStruct.Number = MPU_REGION_NUMBER5;
-	MPU_InitStruct.BaseAddress = 0x10040000;
-	MPU_InitStruct.Size = MPU_REGION_SIZE_32KB;
-	MPU_InitStruct.DisableExec = MPU_INSTRUCTION_ACCESS_DISABLE;
-
-	HAL_MPU_ConfigRegion(&MPU_InitStruct);
-	/* Enables the MPU */
-	HAL_MPU_Enable(MPU_PRIVILEGED_DEFAULT);
-}
-
-/**
  * @brief  CPU L1-Cache enable.
  * @param  None
  * @retval None
@@ -337,48 +260,47 @@ static void CPU_CACHE_Enable(void) {
  * @retval None
  */
 static void SystemClock_Config(void) {
-	RCC_ClkInitTypeDef RCC_ClkInitStruct;
-	RCC_OscInitTypeDef RCC_OscInitStruct;
-	HAL_StatusTypeDef ret = HAL_OK;
+	RCC_OscInitTypeDef RCC_OscInitStruct = { 0 };
+	RCC_ClkInitTypeDef RCC_ClkInitStruct = { 0 };
 
-	/*!< Supply configuration update enable */
+	/** Supply configuration update enable
+	 */
 	HAL_PWREx_ConfigSupply(PWR_DIRECT_SMPS_SUPPLY);
 
-	/* The voltage scaling allows optimizing the power consumption when the device is
-	 clocked below the maximum system frequency, to update the voltage scaling value
-	 regarding system frequency refer to product datasheet.  */
+	/** Configure the main internal regulator output voltage
+	 */
 	__HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
 
 	while (!__HAL_PWR_GET_FLAG(PWR_FLAG_VOSRDY)) {
 	}
 
-	/* Enable HSE Oscillator and activate PLL with HSE as source */
-	RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
+	/** Initializes the RCC Oscillators according to the specified parameters
+	 * in the RCC_OscInitTypeDef structure.
+	 */
+	RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI
+			| RCC_OSCILLATORTYPE_HSE;
 	RCC_OscInitStruct.HSEState = RCC_HSE_ON;
-	RCC_OscInitStruct.HSIState = RCC_HSI_OFF;
-	RCC_OscInitStruct.CSIState = RCC_CSI_OFF;
+	RCC_OscInitStruct.HSIState = RCC_HSI_DIV1;
+	RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
 	RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
 	RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
-
 	RCC_OscInitStruct.PLL.PLLM = 5;
 	RCC_OscInitStruct.PLL.PLLN = 160;
-	RCC_OscInitStruct.PLL.PLLFRACN = 0;
 	RCC_OscInitStruct.PLL.PLLP = 2;
-	RCC_OscInitStruct.PLL.PLLR = 2;
 	RCC_OscInitStruct.PLL.PLLQ = 2;
-
-	RCC_OscInitStruct.PLL.PLLVCOSEL = RCC_PLL1VCOWIDE;
+	RCC_OscInitStruct.PLL.PLLR = 2;
 	RCC_OscInitStruct.PLL.PLLRGE = RCC_PLL1VCIRANGE_2;
-	ret = HAL_RCC_OscConfig(&RCC_OscInitStruct);
-	if (ret != HAL_OK) {
+	RCC_OscInitStruct.PLL.PLLVCOSEL = RCC_PLL1VCOWIDE;
+	RCC_OscInitStruct.PLL.PLLFRACN = 0;
+	if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK) {
 		Error_Handler();
 	}
 
-	/* Select PLL as system clock source and configure  bus clocks dividers */
-	RCC_ClkInitStruct.ClockType = (RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_HCLK
-			| RCC_CLOCKTYPE_D1PCLK1 | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2
-			| RCC_CLOCKTYPE_D3PCLK1);
-
+	/** Initializes the CPU, AHB and APB buses clocks
+	 */
+	RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK
+			| RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2 | RCC_CLOCKTYPE_D3PCLK1
+			| RCC_CLOCKTYPE_D1PCLK1;
 	RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
 	RCC_ClkInitStruct.SYSCLKDivider = RCC_SYSCLK_DIV1;
 	RCC_ClkInitStruct.AHBCLKDivider = RCC_HCLK_DIV2;
@@ -386,28 +308,11 @@ static void SystemClock_Config(void) {
 	RCC_ClkInitStruct.APB1CLKDivider = RCC_APB1_DIV2;
 	RCC_ClkInitStruct.APB2CLKDivider = RCC_APB2_DIV2;
 	RCC_ClkInitStruct.APB4CLKDivider = RCC_APB4_DIV2;
-	ret = HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_4);
-	if (ret != HAL_OK) {
+
+	if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_2) != HAL_OK) {
 		Error_Handler();
 	}
-
-	/*
-	 Note : The activation of the I/O Compensation Cell is recommended with communication  interfaces
-	 (GPIO, SPI, FMC, QSPI ...)  when  operating at  high frequencies(please refer to product datasheet)
-	 The I/O Compensation Cell activation  procedure requires :
-	 - The activation of the CSI clock
-	 - The activation of the SYSCFG clock
-	 - Enabling the I/O Compensation Cell : setting bit[0] of register SYSCFG_CCCSR
-	 */
-
-	/*activate CSI clock mondatory for I/O Compensation Cell*/
-	__HAL_RCC_CSI_ENABLE();
-
-	/* Enable SYSCFG clock mondatory for I/O Compensation Cell */
-	__HAL_RCC_SYSCFG_CLK_ENABLE();
-
-	/* Enables the I/O Compensation Cell */
-	HAL_EnableCompensationCell();
+	HAL_RCC_MCOConfig(RCC_MCO1, RCC_MCO1SOURCE_HSI, RCC_MCODIV_1);
 }
 
 /**
@@ -432,89 +337,6 @@ static void MX_USART1_UART_Init(void) {
 }
 
 /**
- * @brief GPIO Initialization Function
- * @param None
- * @retval None
- */
-static void MX_GPIO_Init(void) {
-	GPIO_InitTypeDef GPIO_InitStruct = { 0 };
-	/* USER CODE BEGIN MX_GPIO_Init_1 */
-	/* USER CODE END MX_GPIO_Init_1 */
-
-	/* GPIO Ports Clock Enable */
-	__HAL_RCC_GPIOI_CLK_ENABLE();
-	__HAL_RCC_GPIOB_CLK_ENABLE();
-	__HAL_RCC_GPIOG_CLK_ENABLE();
-	__HAL_RCC_GPIOE_CLK_ENABLE();
-	__HAL_RCC_GPIOH_CLK_ENABLE();
-	__HAL_RCC_GPIOC_CLK_ENABLE();
-	__HAL_RCC_GPIOJ_CLK_ENABLE();
-	__HAL_RCC_GPIOD_CLK_ENABLE();
-	__HAL_RCC_GPIOA_CLK_ENABLE();
-	__HAL_RCC_GPIOF_CLK_ENABLE();
-
-	/*Configure GPIO pin Output Level */
-	HAL_GPIO_WritePin(GPIOJ,
-	LCD_BL_Pin | FRAME_RATE_Pin | RENDER_TIME_Pin | VSYNC_FREQ_Pin,
-			GPIO_PIN_RESET);
-
-	/*Configure GPIO pin Output Level */
-	HAL_GPIO_WritePin(LCD_RESET_GPIO_Port, LCD_RESET_Pin, GPIO_PIN_RESET);
-
-	/*Configure GPIO pin Output Level */
-	HAL_GPIO_WritePin(MCU_ACTIVE_GPIO_Port, MCU_ACTIVE_Pin, GPIO_PIN_RESET);
-
-	/*Configure GPIO pins : LCD_BL_Pin FRAME_RATE_Pin RENDER_TIME_Pin VSYNC_FREQ_Pin */
-	GPIO_InitStruct.Pin = LCD_BL_Pin | FRAME_RATE_Pin | RENDER_TIME_Pin
-			| VSYNC_FREQ_Pin;
-	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-	GPIO_InitStruct.Pull = GPIO_NOPULL;
-	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
-	HAL_GPIO_Init(GPIOJ, &GPIO_InitStruct);
-
-	/*Configure GPIO pin : PA8 */
-	GPIO_InitStruct.Pin = GPIO_PIN_8;
-	GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-	GPIO_InitStruct.Pull = GPIO_NOPULL;
-	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-	GPIO_InitStruct.Alternate = GPIO_AF0_MCO;
-	HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
-	/*Configure GPIO pin : LCD_RESET_Pin */
-	GPIO_InitStruct.Pin = LCD_RESET_Pin;
-	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-	GPIO_InitStruct.Pull = GPIO_PULLUP;
-	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
-	HAL_GPIO_Init(LCD_RESET_GPIO_Port, &GPIO_InitStruct);
-
-	/*Configure GPIO pin : MCU_ACTIVE_Pin */
-	GPIO_InitStruct.Pin = MCU_ACTIVE_Pin;
-	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-	GPIO_InitStruct.Pull = GPIO_NOPULL;
-	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
-	HAL_GPIO_Init(MCU_ACTIVE_GPIO_Port, &GPIO_InitStruct);
-
-	/* USER CODE BEGIN MX_GPIO_Init_2 */
-	/* USER CODE END MX_GPIO_Init_2 */
-}
-
-/**
- * Enable MDMA controller clock
- */
-static void MX_MDMA_Init(void) {
-
-	/* MDMA controller clock enable */
-	__HAL_RCC_MDMA_CLK_ENABLE();
-	/* Local variables */
-
-	/* MDMA interrupt initialization */
-	/* MDMA_IRQn interrupt configuration */
-	HAL_NVIC_SetPriority(MDMA_IRQn, 5, 0);
-	HAL_NVIC_EnableIRQ(MDMA_IRQn);
-
-}
-
-/**
  * @brief CRC Initialization Function
  * @param None
  * @retval None
@@ -529,54 +351,6 @@ static void MX_CRC_Init(void) {
 	if (HAL_CRC_Init(&hcrc) != HAL_OK) {
 		Error_Handler();
 	}
-}
-
-/* FMC initialization function */
-void MX_FMC_Init(void) {
-
-	/* USER CODE BEGIN FMC_Init 0 */
-
-	/* USER CODE END FMC_Init 0 */
-
-	FMC_SDRAM_TimingTypeDef SdramTiming = { 0 };
-
-	/* USER CODE BEGIN FMC_Init 1 */
-	FMC_Bank1_R->BTCR[0] &= ~FMC_BCRx_MBKEN;
-	/* USER CODE END FMC_Init 1 */
-
-	/** Perform the SDRAM1 memory initialization sequence
-	 */
-	hsdram1.Instance = FMC_SDRAM_DEVICE;
-	/* hsdram1.Init */
-	hsdram1.Init.SDBank = FMC_SDRAM_BANK2;
-	hsdram1.Init.ColumnBitsNumber = FMC_SDRAM_COLUMN_BITS_NUM_9;
-	hsdram1.Init.RowBitsNumber = FMC_SDRAM_ROW_BITS_NUM_12;
-	hsdram1.Init.MemoryDataWidth = FMC_SDRAM_MEM_BUS_WIDTH_32;
-	hsdram1.Init.InternalBankNumber = FMC_SDRAM_INTERN_BANKS_NUM_4;
-	hsdram1.Init.CASLatency = FMC_SDRAM_CAS_LATENCY_3;
-	hsdram1.Init.WriteProtection = FMC_SDRAM_WRITE_PROTECTION_DISABLE;
-	hsdram1.Init.SDClockPeriod = FMC_SDRAM_CLOCK_PERIOD_2;
-	hsdram1.Init.ReadBurst = FMC_SDRAM_RBURST_ENABLE;
-	hsdram1.Init.ReadPipeDelay = FMC_SDRAM_RPIPE_DELAY_0;
-	/* SdramTiming */
-	SdramTiming.LoadToActiveDelay = 2;
-	SdramTiming.ExitSelfRefreshDelay = 7;
-	SdramTiming.SelfRefreshTime = 4;
-	SdramTiming.RowCycleDelay = 7;
-	SdramTiming.WriteRecoveryTime = 3;
-	SdramTiming.RPDelay = 2;
-	SdramTiming.RCDDelay = 2;
-
-	if (HAL_SDRAM_Init(&hsdram1, &SdramTiming) != HAL_OK) {
-		Error_Handler();
-	}
-
-	/* USER CODE BEGIN FMC_Init 2 */
-	BSP_SDRAM_DeInit(0);
-	if (BSP_SDRAM_Init(0) != BSP_ERROR_NONE) {
-		Error_Handler();
-	}
-	/* USER CODE END FMC_Init 2 */
 }
 
 /**
@@ -851,6 +625,246 @@ static void MX_JPEG_Init(void) {
 
 	/* USER CODE END JPEG_Init 2 */
 
+}
+
+/**
+ * Enable MDMA controller clock
+ */
+static void MX_MDMA_Init(void) {
+
+	/* MDMA controller clock enable */
+	__HAL_RCC_MDMA_CLK_ENABLE();
+	/* Local variables */
+
+	/* MDMA interrupt initialization */
+	/* MDMA_IRQn interrupt configuration */
+	HAL_NVIC_SetPriority(MDMA_IRQn, 5, 0);
+	HAL_NVIC_EnableIRQ(MDMA_IRQn);
+
+}
+
+/* FMC initialization function */
+void MX_FMC_Init(void) {
+
+	/* USER CODE BEGIN FMC_Init 0 */
+
+	/* USER CODE END FMC_Init 0 */
+
+	FMC_SDRAM_TimingTypeDef SdramTiming = { 0 };
+
+	/* USER CODE BEGIN FMC_Init 1 */
+	FMC_Bank1_R->BTCR[0] &= ~FMC_BCRx_MBKEN;
+	/* USER CODE END FMC_Init 1 */
+
+	/** Perform the SDRAM1 memory initialization sequence
+	 */
+	hsdram1.Instance = FMC_SDRAM_DEVICE;
+	/* hsdram1.Init */
+	hsdram1.Init.SDBank = FMC_SDRAM_BANK2;
+	hsdram1.Init.ColumnBitsNumber = FMC_SDRAM_COLUMN_BITS_NUM_9;
+	hsdram1.Init.RowBitsNumber = FMC_SDRAM_ROW_BITS_NUM_12;
+	hsdram1.Init.MemoryDataWidth = FMC_SDRAM_MEM_BUS_WIDTH_32;
+	hsdram1.Init.InternalBankNumber = FMC_SDRAM_INTERN_BANKS_NUM_4;
+	hsdram1.Init.CASLatency = FMC_SDRAM_CAS_LATENCY_3;
+	hsdram1.Init.WriteProtection = FMC_SDRAM_WRITE_PROTECTION_DISABLE;
+	hsdram1.Init.SDClockPeriod = FMC_SDRAM_CLOCK_PERIOD_2;
+	hsdram1.Init.ReadBurst = FMC_SDRAM_RBURST_ENABLE;
+	hsdram1.Init.ReadPipeDelay = FMC_SDRAM_RPIPE_DELAY_0;
+	/* SdramTiming */
+	SdramTiming.LoadToActiveDelay = 2;
+	SdramTiming.ExitSelfRefreshDelay = 7;
+	SdramTiming.SelfRefreshTime = 4;
+	SdramTiming.RowCycleDelay = 7;
+	SdramTiming.WriteRecoveryTime = 3;
+	SdramTiming.RPDelay = 2;
+	SdramTiming.RCDDelay = 2;
+
+	if (HAL_SDRAM_Init(&hsdram1, &SdramTiming) != HAL_OK) {
+		Error_Handler();
+	}
+
+	/* USER CODE BEGIN FMC_Init 2 */
+	BSP_SDRAM_DeInit(0);
+	if (BSP_SDRAM_Init(0) != BSP_ERROR_NONE) {
+		Error_Handler();
+	}
+	/* USER CODE END FMC_Init 2 */
+}
+
+/**
+ * @brief GPIO Initialization Function
+ * @param None
+ * @retval None
+ */
+static void MX_GPIO_Init(void) {
+	GPIO_InitTypeDef GPIO_InitStruct = { 0 };
+	/* USER CODE BEGIN MX_GPIO_Init_1 */
+	/* USER CODE END MX_GPIO_Init_1 */
+
+	/* GPIO Ports Clock Enable */
+	__HAL_RCC_GPIOI_CLK_ENABLE();
+	__HAL_RCC_GPIOB_CLK_ENABLE();
+	__HAL_RCC_GPIOG_CLK_ENABLE();
+	__HAL_RCC_GPIOE_CLK_ENABLE();
+	__HAL_RCC_GPIOH_CLK_ENABLE();
+	__HAL_RCC_GPIOC_CLK_ENABLE();
+	__HAL_RCC_GPIOJ_CLK_ENABLE();
+	__HAL_RCC_GPIOD_CLK_ENABLE();
+	__HAL_RCC_GPIOA_CLK_ENABLE();
+	__HAL_RCC_GPIOF_CLK_ENABLE();
+
+	/*Configure GPIO pin Output Level */
+	HAL_GPIO_WritePin(GPIOJ,
+	LCD_BL_Pin | FRAME_RATE_Pin | RENDER_TIME_Pin | VSYNC_FREQ_Pin,
+			GPIO_PIN_RESET);
+
+	/*Configure GPIO pin Output Level */
+	HAL_GPIO_WritePin(LCD_RESET_GPIO_Port, LCD_RESET_Pin, GPIO_PIN_RESET);
+
+	/*Configure GPIO pin Output Level */
+	HAL_GPIO_WritePin(MCU_ACTIVE_GPIO_Port, MCU_ACTIVE_Pin, GPIO_PIN_RESET);
+
+	/*Configure GPIO pins : LCD_BL_Pin FRAME_RATE_Pin RENDER_TIME_Pin VSYNC_FREQ_Pin */
+	GPIO_InitStruct.Pin = LCD_BL_Pin | FRAME_RATE_Pin | RENDER_TIME_Pin
+			| VSYNC_FREQ_Pin;
+	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+	GPIO_InitStruct.Pull = GPIO_NOPULL;
+	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+	HAL_GPIO_Init(GPIOJ, &GPIO_InitStruct);
+
+	/*Configure GPIO pin : PA8 */
+	GPIO_InitStruct.Pin = GPIO_PIN_8;
+	GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+	GPIO_InitStruct.Pull = GPIO_NOPULL;
+	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+	GPIO_InitStruct.Alternate = GPIO_AF0_MCO;
+	HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+	/*Configure GPIO pin : LCD_RESET_Pin */
+	GPIO_InitStruct.Pin = LCD_RESET_Pin;
+	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+	GPIO_InitStruct.Pull = GPIO_PULLUP;
+	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+	HAL_GPIO_Init(LCD_RESET_GPIO_Port, &GPIO_InitStruct);
+
+	/*Configure GPIO pin : MCU_ACTIVE_Pin */
+	GPIO_InitStruct.Pin = MCU_ACTIVE_Pin;
+	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+	GPIO_InitStruct.Pull = GPIO_NOPULL;
+	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+	HAL_GPIO_Init(MCU_ACTIVE_GPIO_Port, &GPIO_InitStruct);
+
+	/* USER CODE BEGIN MX_GPIO_Init_2 */
+	/* USER CODE END MX_GPIO_Init_2 */
+}
+
+/**
+ * @brief  Function implementing the TouchGFXTask thread.
+ * @param  argument: Not used
+ * @retval None
+ */
+/* USER CODE END Header_TouchGFX_Task */
+__weak void TouchGFX_Task(void *argument) {
+	/* USER CODE BEGIN 5 */
+	/* Infinite loop */
+	for (;;) {
+		osDelay(1);
+	}
+	/* USER CODE END 5 */
+}
+
+/**
+ * @brief  Configure the MPU attributes as Write Through for SDRAM.
+ * @note   The Base Address is SDRAM_DEVICE_ADDR.
+ *         The Region Size is 32MB.
+ * @param  None
+ * @retval None
+ */
+static void MPU_Config(void) {
+	MPU_Region_InitTypeDef MPU_InitStruct = { 0 };
+
+	/* Disables the MPU */
+	HAL_MPU_Disable();
+
+	/** Initializes and configures the Region and the memory to be protected
+	 */
+	MPU_InitStruct.Enable = MPU_REGION_ENABLE;
+	MPU_InitStruct.Number = MPU_REGION_NUMBER0;
+	MPU_InitStruct.BaseAddress = 0x90000000;
+	MPU_InitStruct.Size = MPU_REGION_SIZE_256MB;
+	MPU_InitStruct.SubRegionDisable = 0x0;
+	MPU_InitStruct.TypeExtField = MPU_TEX_LEVEL0;
+	MPU_InitStruct.AccessPermission = MPU_REGION_FULL_ACCESS;
+	MPU_InitStruct.DisableExec = MPU_INSTRUCTION_ACCESS_DISABLE;
+	MPU_InitStruct.IsShareable = MPU_ACCESS_NOT_SHAREABLE;
+	MPU_InitStruct.IsCacheable = MPU_ACCESS_NOT_CACHEABLE;
+	MPU_InitStruct.IsBufferable = MPU_ACCESS_NOT_BUFFERABLE;
+
+	HAL_MPU_ConfigRegion(&MPU_InitStruct);
+
+	/** Initializes and configures the Region and the memory to be protected
+	 */
+	MPU_InitStruct.Number = MPU_REGION_NUMBER1;
+	MPU_InitStruct.Size = MPU_REGION_SIZE_128MB;
+
+	HAL_MPU_ConfigRegion(&MPU_InitStruct);
+
+	/** Initializes and configures the Region and the memory to be protected
+	 */
+	MPU_InitStruct.Number = MPU_REGION_NUMBER2;
+	MPU_InitStruct.BaseAddress = 0xD0000000;
+	MPU_InitStruct.Size = MPU_REGION_SIZE_32MB;
+	MPU_InitStruct.IsCacheable = MPU_ACCESS_CACHEABLE;
+
+	HAL_MPU_ConfigRegion(&MPU_InitStruct);
+
+	/** Initializes and configures the Region and the memory to be protected
+	 */
+	MPU_InitStruct.Number = MPU_REGION_NUMBER3;
+	MPU_InitStruct.BaseAddress = 0x24000000;
+	MPU_InitStruct.Size = MPU_REGION_SIZE_512KB;
+	MPU_InitStruct.DisableExec = MPU_INSTRUCTION_ACCESS_ENABLE;
+
+	HAL_MPU_ConfigRegion(&MPU_InitStruct);
+
+	/** Initializes and configures the Region and the memory to be protected
+	 */
+	MPU_InitStruct.Number = MPU_REGION_NUMBER4;
+	MPU_InitStruct.BaseAddress = 0x10000000;
+	MPU_InitStruct.Size = MPU_REGION_SIZE_256KB;
+
+	HAL_MPU_ConfigRegion(&MPU_InitStruct);
+
+	/** Initializes and configures the Region and the memory to be protected
+	 */
+	MPU_InitStruct.Number = MPU_REGION_NUMBER5;
+	MPU_InitStruct.BaseAddress = 0x10040000;
+	MPU_InitStruct.Size = MPU_REGION_SIZE_32KB;
+	MPU_InitStruct.DisableExec = MPU_INSTRUCTION_ACCESS_DISABLE;
+
+	HAL_MPU_ConfigRegion(&MPU_InitStruct);
+	/* Enables the MPU */
+	HAL_MPU_Enable(MPU_PRIVILEGED_DEFAULT);
+}
+
+/**
+ * @brief  Period elapsed callback in non blocking mode
+ * @note   This function is called  when TIM6 interrupt took place, inside
+ * HAL_TIM_IRQHandler(). It makes a direct call to HAL_IncTick() to increment
+ * a global variable "uwTick" used as application time base.
+ * @param  htim : TIM handle
+ * @retval None
+ */
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
+	/* USER CODE BEGIN Callback 0 */
+
+	/* USER CODE END Callback 0 */
+	if (htim->Instance == TIM6) {
+		HAL_IncTick();
+	}
+	/* USER CODE BEGIN Callback 1 */
+
+	/* USER CODE END Callback 1 */
 }
 
 /**
