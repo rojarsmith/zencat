@@ -141,8 +141,7 @@ int main(void) {
 	/* creation of TouchGFXTask */
 //	guiTaskHandle = osThreadNew(TouchGFX_Task, NULL,
 //			&guiTask_attributes);
-	guiTaskHandle = osThreadNew(GUITask, NULL,
-				&guiTask_attributes);
+	guiTaskHandle = osThreadNew(GUITask, NULL, &guiTask_attributes);
 
 	/* creation of videoTask */
 	rtcTaskHandle = osThreadNew(RTCTask, NULL, &rtcTask_attributes);
