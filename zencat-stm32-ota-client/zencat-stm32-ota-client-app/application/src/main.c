@@ -883,7 +883,9 @@ int _write(int file, char *ptr, int len) {
 	int idx;
 
 	for (idx = 0; idx < len; idx++) {
+		osKernelLock();
 		HAL_UART_Transmit(&huart1, (uint8_t*) ptr++, 1, 100);
+		osKernelUnlock();
 	}
 
 	return idx;
