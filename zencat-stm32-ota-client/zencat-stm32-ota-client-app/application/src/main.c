@@ -21,7 +21,7 @@
 #include "app_touchgfx.h"
 
 /* Private define ------------------------------------------------------------*/
-#define FLASH_ADDR_BOOTLOADER 0x08000000
+#define FLASH_ADDR_BOOTLOADER 0x08000000 //0x08000000 0x1FF09800
 #define FLASH_ADDR_APP_0      0x08040000
 #define FLASH_ADDR_APP_1      0x080A0000
 
@@ -179,6 +179,11 @@ static void Jump_To_Boot(uint32_t address) {
 		NVIC->ICPR[2] = 0xFFFFFFFF;
 
 		SysTick->CTRL = 0;  // Disable SysTick
+
+		SCB_DisableICache();
+		SCB_DisableDCache();
+
+		NVIC_SystemReset();
 
 		// Set vector table
 		SCB->VTOR = (unsigned long) FLASH_ADDR_BOOTLOADER;
