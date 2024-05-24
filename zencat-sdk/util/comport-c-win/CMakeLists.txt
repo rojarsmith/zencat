@@ -10,9 +10,15 @@ set (PROJECT_INCLUDES
     .
 )
 
+set (PROJECT_DEFINES
+    #CASE1_RECEIVE
+    CASE2_POST
+)
+
 include(CTest)
 enable_testing()
 
+add_compile_definitions (${PROJECT_DEFINES})
 include_directories (${PROJECT_INCLUDES})
 
 add_executable(comport-c-win ${PROJECT_SOURCES})
