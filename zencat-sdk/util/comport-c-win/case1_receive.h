@@ -1,6 +1,7 @@
 #ifndef CASE1_RECEIVE_INCLUDED
 #define CASE1_RECEIVE_INCLUDED
 
+#include <unistd.h>
 #include <stdio.h>
 #include "main.h"
 #include "rs232.h"
@@ -12,12 +13,12 @@ void case1_receive()
     int state = 0;
 
     int com_port = COM_PORT;
-    int baudrate = 115200;
+    int baudrate = BAUDRATE;
     char mode[] = {'8', 'N', '1', 0};
 
     int n = 0;
 
-    unsigned char recv_buf[RECV_BUF_SIZE] = {0};
+    unsigned char recv_buf[RECV_BUF_SIZE + 1] = {0};
 
     /* Open COM Port */
     if (RS232_OpenComport(com_port, baudrate, mode, 0))
