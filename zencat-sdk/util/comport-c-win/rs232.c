@@ -658,7 +658,7 @@ https://docs.microsoft.com/en-us/windows/desktop/api/winbase/ns-winbase-_dcb
 https://docs.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-buildcommdcba
 */
 
-  Cport[comport_number] = CreateFileA(comports[comport_number - 1],
+  Cport[comport_number] = CreateFileA(comports[comport_number],
                       GENERIC_READ|GENERIC_WRITE,
                       0,                          /* no share  */
                       NULL,                       /* no security */
