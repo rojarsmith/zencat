@@ -61,7 +61,7 @@ int esp32_at_agent_initial()
 int esp32_at_agent_receive()
 {
     resp_idx = 0;
-    resp_fin = 0;
+    resp_fin = 1;
     int n = 0;
     int retry = 0;
     int brk = 0;
@@ -101,7 +101,7 @@ int esp32_at_agent_receive()
                 if (i < RECV_BUF_SIZE &&
                     recv_buf[i] == '\0')
                 {
-                    resp_fin = 1;
+                    resp_fin = 0;
                     brk = 1;
                 }
             }
@@ -135,6 +135,11 @@ int esp32_at_agent_response_status()
     return resp_fin;
 }
 
-// int esp32_at_agent_send_at(
-//     const char *cmd,
-//      unsigned char *buff, int com_port);
+int esp32_at_agent_send_at(const char *cmd)
+{
+    strcpy(send_buf, cmd);
+    RS232_cputs(esp32_at_agent.com_port, send_buf);
+    esp32_at_agent.esp32_status = WAIT_RESPOSE;
+
+    return 0;
+}

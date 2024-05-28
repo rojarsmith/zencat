@@ -6,6 +6,9 @@
 #define RESP_BUF_SIZE 1024
 #define RETRY_COUNT 3
 
+/* AT Command */
+#define AT_RST "AT+RST\r\n"
+
 typedef enum
 {
     IDLE,
@@ -51,9 +54,6 @@ unsigned char *esp32_at_agent_response();
 
 int esp32_at_agent_response_status();
 
-// int esp32_at_agent_send_at(
-//     const char *cmd,
-//     unsigned char *buff,
-//     int com_port);
+int esp32_at_agent_send_at(const char *cmd);
 
 #endif

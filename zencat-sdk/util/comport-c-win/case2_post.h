@@ -41,6 +41,7 @@ void case2_post()
     //     // RS232_cputs(com_port, send_buf);
     //     // esp32_status = WAIT_RESPOSE;
     //     sendAT((const char *)AT_RST, send_buf, com_port);
+    esp32_at_agent_send_at(AT_RST);
 
     //     while (WAIT_RESPOSE)
     //     {
@@ -74,18 +75,19 @@ void case2_post()
     //         usleep(1000000); /* sleep for 1 Second */
     // #endif
     //     }
+
     esp32_at_agent_receive();
-    if (esp32_at_agent_response_status() == 1)
+    if (!esp32_at_agent_response_status())
     {
         printf("response: %s", esp32_at_agent_response());
     }
     esp32_at_agent_receive();
-    if (esp32_at_agent_response_status() == 1)
+    if (!esp32_at_agent_response_status())
     {
         printf("response: %s", esp32_at_agent_response());
     }
     esp32_at_agent_receive();
-    if (esp32_at_agent_response_status() == 1)
+    if (!esp32_at_agent_response_status())
     {
         printf("response: %s", esp32_at_agent_response());
     }
