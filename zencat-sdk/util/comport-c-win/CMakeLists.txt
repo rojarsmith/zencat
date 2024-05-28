@@ -4,6 +4,7 @@ project(comport-c-win VERSION 0.1.0 LANGUAGES C CXX)
 set (PROJECT_SOURCES
     main.c
     rs232.c
+    esp32atagent.c
 )
 
 set (PROJECT_INCLUDES
