@@ -51,6 +51,14 @@ void case2_post()
     {
         printf("response: %s", esp32_at_agent_response());
     }
+
+    esp32_at_agent_send_at(AT_CWJAP("NAME", "PASSWORD"));
+
+    esp32_at_agent_receive();
+    if (!esp32_at_agent_response_status())
+    {
+        printf("response: %s", esp32_at_agent_response());
+    }
 }
 
 #endif

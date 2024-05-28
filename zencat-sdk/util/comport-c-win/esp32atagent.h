@@ -9,6 +9,7 @@
 /* AT Command */
 #define AT_RST "AT+RST\r\n"
 #define AT_CWMODE(arg) "AT+CWMODE=" arg "\r\n"
+#define AT_CWJAP(NAME, PASSWORD) "AT+CWJAP=\"" NAME "\",\"" PASSWORD "\"\r\n"
 
 typedef enum
 {
