@@ -1,3 +1,8 @@
+#ifdef _WIN32
+#include <Windows.h>
+#else
+#include <unistd.h>
+#endif
 #include <stdio.h>
 #include "rs232.h"
 #include "esp32atagent.h"
@@ -137,9 +142,27 @@ int esp32_at_agent_response_status()
 
 int esp32_at_agent_send_at(const char *cmd)
 {
+    if (strcmp(cmd, AT_CIPSTA) == 0)
+    {
+#ifdef _WIN32
+        Sleep(1000);
+#else
+        usleep(1000000); // sleep for 1 Second
+#endif
+    }
+
     strcpy(send_buf, cmd);
     RS232_cputs(esp32_at_agent.com_port, send_buf);
     esp32_at_agent.esp32_status = WAIT_RESPOSE;
+
+    if (strcmp(cmd, AT_CIPSTA) == 0)
+    {
+#ifdef _WIN32
+        Sleep(1000);
+#else
+        usleep(1000000); // sleep for 1 Second
+#endif
+    }
 
     return 0;
 }

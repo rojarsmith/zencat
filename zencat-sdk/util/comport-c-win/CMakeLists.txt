@@ -16,6 +16,13 @@ set (PROJECT_DEFINES
     CASE2_POST
 )
 
+# Check if the header file exists
+if(EXISTS "${CMAKE_SOURCE_DIR}/main_dev.h")
+    add_definitions(-DDEV_MODE=1)
+else()
+    add_definitions(-DDEV_MODE=0)
+endif()
+
 include(CTest)
 enable_testing()
 

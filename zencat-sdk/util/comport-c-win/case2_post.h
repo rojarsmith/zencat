@@ -1,11 +1,11 @@
 #ifndef CASE2_POST_INCLUDED
 #define CASE2_POST_INCLUDED
 
-#ifdef _WIN32
-#include <Windows.h>
-#else
-#include <unistd.h>
-#endif
+// #ifdef _WIN32
+// #include <Windows.h>
+// #else
+// #include <unistd.h>
+// #endif
 #include <stdio.h>
 #include <string.h>
 #include "main.h"
@@ -52,8 +52,38 @@ void case2_post()
         printf("response: %s", esp32_at_agent_response());
     }
 
-    esp32_at_agent_send_at(AT_CWJAP("NAME", "PASSWORD"));
+    esp32_at_agent_send_at(AT_CWJAP(WIFI_USERNAME, WIFI_PASSWORD));
 
+    esp32_at_agent_receive();
+    if (!esp32_at_agent_response_status())
+    {
+        printf("response: %s", esp32_at_agent_response());
+    }
+
+    // #ifdef _WIN32
+    //             Sleep(1000);
+    // #else
+    //             usleep(1000000); /* sleep for 1 Second */
+    // #endif
+
+    esp32_at_agent_send_at(AT_CIPSTA);
+
+    // #ifdef _WIN32
+    //             Sleep(1000);
+    // #else
+    //             usleep(1000000); /* sleep for 1 Second */
+    // #endif
+
+    esp32_at_agent_receive();
+    if (!esp32_at_agent_response_status())
+    {
+        printf("response: %s", esp32_at_agent_response());
+    }
+    esp32_at_agent_receive();
+    if (!esp32_at_agent_response_status())
+    {
+        printf("response: %s", esp32_at_agent_response());
+    }
     esp32_at_agent_receive();
     if (!esp32_at_agent_response_status())
     {

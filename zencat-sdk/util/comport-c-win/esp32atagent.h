@@ -10,6 +10,7 @@
 #define AT_RST "AT+RST\r\n"
 #define AT_CWMODE(arg) "AT+CWMODE=" arg "\r\n"
 #define AT_CWJAP(NAME, PASSWORD) "AT+CWJAP=\"" NAME "\",\"" PASSWORD "\"\r\n"
+#define AT_CIPSTA "AT+CIPSTA?\r\n"
 
 typedef enum
 {
