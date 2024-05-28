@@ -2,12 +2,13 @@
 #define ESP32ATAGENT
 
 #define SEND_BUF_SIZE 1024
-#define RECV_BUF_SIZE 5
+#define RECV_BUF_SIZE 64
 #define RESP_BUF_SIZE 1024
 #define RETRY_COUNT 3
 
 /* AT Command */
 #define AT_RST "AT+RST\r\n"
+#define AT_CWMODE(arg) "AT+CWMODE=" arg "\r\n"
 
 typedef enum
 {

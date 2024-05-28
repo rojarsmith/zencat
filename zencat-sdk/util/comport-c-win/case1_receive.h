@@ -13,7 +13,7 @@ void case1_receive()
     int state = 0;
 
     int com_port = COM_PORT;
-    int baudrate = BAUDRATE;
+    int baudrate = BAUD_RATE;
     char mode[] = {'8', 'N', '1', 0};
 
     int n = 0;
