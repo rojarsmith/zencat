@@ -13,7 +13,6 @@ Esp32AtAgent esp32_at_agent = {
 
 int resp_idx = 0;
 int resp_fin = 0;
-int resp_fin2 = 0;
 unsigned char send_buf[SEND_BUF_SIZE + 1] = {0};
 unsigned char recv_buf[RECV_BUF_SIZE + 1] = {0};
 unsigned char resp_buf[RESP_BUF_SIZE + 1] = {0};
@@ -129,6 +128,11 @@ int esp32_at_agent_receive()
 unsigned char *esp32_at_agent_response()
 {
     return resp_buf;
+}
+
+int esp32_at_agent_response_status()
+{
+    return resp_fin;
 }
 
 // int esp32_at_agent_send_at(

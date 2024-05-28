@@ -49,6 +49,8 @@ int esp32_at_agent_receive();
 
 unsigned char *esp32_at_agent_response();
 
+int esp32_at_agent_response_status();
+
 // int esp32_at_agent_send_at(
 //     const char *cmd,
 //     unsigned char *buff,

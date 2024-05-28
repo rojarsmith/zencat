@@ -75,11 +75,20 @@ void case2_post()
     // #endif
     //     }
     esp32_at_agent_receive();
-    printf("response: %s", esp32_at_agent_response());
+    if (esp32_at_agent_response_status() == 1)
+    {
+        printf("response: %s", esp32_at_agent_response());
+    }
     esp32_at_agent_receive();
-    printf("response: %s", esp32_at_agent_response());
+    if (esp32_at_agent_response_status() == 1)
+    {
+        printf("response: %s", esp32_at_agent_response());
+    }
     esp32_at_agent_receive();
-    printf("response: %s", esp32_at_agent_response());
+    if (esp32_at_agent_response_status() == 1)
+    {
+        printf("response: %s", esp32_at_agent_response());
+    }
 }
 
 // void sendAT(const char *cmd, unsigned char *buff, int com_port)
