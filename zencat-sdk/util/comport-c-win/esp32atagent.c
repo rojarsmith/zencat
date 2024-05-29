@@ -19,6 +19,7 @@ Esp32AtAgent esp32_at_agent = {
 int resp_idx = 0;
 int resp_fin = 0;
 unsigned char send_buf[SEND_BUF_SIZE + 1] = {0};
+int send_len = 0;
 unsigned char recv_buf[RECV_BUF_SIZE + 1] = {0};
 unsigned char resp_buf[RESP_BUF_SIZE + 1] = {0};
 
@@ -42,7 +43,7 @@ int esp32_at_agent_set_config(
 
 int esp32_at_agent_initial()
 {
-    esp32_at_agent.esp32_status = IDLE;
+    esp32_at_agent.esp32_status = WAIT_RESPOSE;
 
     if (RS232_OpenComport(
             esp32_at_agent.com_port,
@@ -58,12 +59,12 @@ int esp32_at_agent_initial()
         return 0;
     }
 
-    esp32_at_agent.esp32_status = WAIT_RESPOSE;
+    esp32_at_agent.esp32_status = IDLE;
 
     return 0;
 }
 
-int esp32_at_agent_receive()
+int esp32_at_agent_receive(int remove_echo)
 {
     resp_idx = 0;
     resp_fin = 1;
@@ -71,7 +72,8 @@ int esp32_at_agent_receive()
     int retry = 0;
     int brk = 0;
 
-    while (WAIT_RESPOSE && retry <= RETRY_COUNT)
+    while (esp32_at_agent.esp32_status == WAIT_RESPOSE &&
+           retry <= RETRY_COUNT)
     {
         n = RS232_PollComport(
             esp32_at_agent.com_port,
@@ -82,6 +84,7 @@ int esp32_at_agent_receive()
         {
             recv_buf[n] = 0; // always put a "null" at the end of a string!
 
+            printf("[received]=====\n");
             printf("received %i bytes: %s\n", n, (char *)recv_buf);
 
             for (int i = 0; i <= RECV_BUF_SIZE; i++)
@@ -127,6 +130,15 @@ int esp32_at_agent_receive()
         }
     }
 
+    if (remove_echo == 1)
+    {
+        for (int i = 0; i < (RESP_BUF_SIZE - send_len); i++)
+        {
+            resp_buf[i] = resp_buf[i + send_len];
+        }
+    }
+
+    esp32_at_agent.esp32_status = IDLE;
     return 0;
 }
 
@@ -137,11 +149,18 @@ unsigned char *esp32_at_agent_response()
 
 int esp32_at_agent_response_status()
 {
-    return resp_fin;
+    if (resp_fin == 0)
+    {
+        resp_fin = 1;
+        return 0;
+    }
+    return 1;
 }
 
 int esp32_at_agent_send_at(const char *cmd)
 {
+    send_len = strlen(cmd);
+
     if (strcmp(cmd, AT_CIPSTA) == 0)
     {
 #ifdef _WIN32
@@ -151,9 +170,9 @@ int esp32_at_agent_send_at(const char *cmd)
 #endif
     }
 
+    esp32_at_agent.esp32_status = WAIT_RESPOSE;
     strcpy(send_buf, cmd);
     RS232_cputs(esp32_at_agent.com_port, send_buf);
-    esp32_at_agent.esp32_status = WAIT_RESPOSE;
 
     if (strcmp(cmd, AT_CIPSTA) == 0)
     {

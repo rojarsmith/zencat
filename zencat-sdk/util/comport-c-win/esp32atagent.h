@@ -54,7 +54,7 @@ int esp32_at_agent_set_config(
 
 int esp32_at_agent_initial();
 
-int esp32_at_agent_receive();
+int esp32_at_agent_receive(int remove_echo);
 
 unsigned char *esp32_at_agent_response();
 
