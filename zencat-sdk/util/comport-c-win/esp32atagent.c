@@ -166,3 +166,13 @@ int esp32_at_agent_send_at(const char *cmd)
 
     return 0;
 }
+
+int extract_integer(const char *str)
+{
+    int value = 0;
+    if (sscanf(str, "+HTTPGETSIZE:%d", &value) == 1)
+    {
+        return value;
+    }
+    return -1;
+}

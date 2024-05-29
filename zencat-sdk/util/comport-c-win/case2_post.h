@@ -1,11 +1,6 @@
 #ifndef CASE2_POST_INCLUDED
 #define CASE2_POST_INCLUDED
 
-#ifdef _WIN32
-#include <Windows.h>
-#else
-#include <unistd.h>
-#endif
 #include <stdio.h>
 #include <string.h>
 #include "main.h"
@@ -73,11 +68,7 @@ void case2_post()
         printf("response: %s", esp32_at_agent_response());
     }
 
-    Sleep(2000);
-
     esp32_at_agent_send_at(AT_HTTPGETSIZE(FILE_URL_1));
-
-    Sleep(2000);
 
     esp32_at_agent_receive();
     if (!esp32_at_agent_response_status())
@@ -88,6 +79,18 @@ void case2_post()
     if (!esp32_at_agent_response_status())
     {
         printf("response: %s", esp32_at_agent_response());
+    }
+    esp32_at_agent_receive();
+    if (!esp32_at_agent_response_status())
+    {
+        printf("response: %s", esp32_at_agent_response());
+    }
+
+    int res_size = extract_integer(esp32_at_agent_response());
+    printf("response: %d", res_size);
+
+    if (res_size > 0)
+    {
     }
 }
 

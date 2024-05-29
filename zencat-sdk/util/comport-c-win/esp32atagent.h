@@ -60,4 +60,6 @@ int esp32_at_agent_response_status();
 
 int esp32_at_agent_send_at(const char *cmd);
 
+int extract_integer(const char *str);
+
 #endif
