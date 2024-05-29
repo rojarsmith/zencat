@@ -43,7 +43,7 @@ int esp32_at_agent_set_config(
 
 int esp32_at_agent_initial()
 {
-    esp32_at_agent.esp32_status = WAIT_RESPOSE;
+    // esp32_at_agent.esp32_status = WAIT_RESPOSE;
 
     if (RS232_OpenComport(
             esp32_at_agent.com_port,
@@ -59,7 +59,7 @@ int esp32_at_agent_initial()
         return 0;
     }
 
-    esp32_at_agent.esp32_status = IDLE;
+    // esp32_at_agent.esp32_status = IDLE;
 
     return 0;
 }
@@ -72,8 +72,7 @@ int esp32_at_agent_receive(int remove_echo)
     int retry = 0;
     int brk = 0;
 
-    while (esp32_at_agent.esp32_status == WAIT_RESPOSE &&
-           retry <= RETRY_COUNT)
+    while (retry <= RETRY_COUNT)
     {
         n = RS232_PollComport(
             esp32_at_agent.com_port,
@@ -138,7 +137,7 @@ int esp32_at_agent_receive(int remove_echo)
         }
     }
 
-    esp32_at_agent.esp32_status = IDLE;
+    // esp32_at_agent.esp32_status = IDLE;
     return 0;
 }
 

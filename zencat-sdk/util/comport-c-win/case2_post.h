@@ -23,6 +23,11 @@ void case2_post()
     {
         printf("response: %s", esp32_at_agent_response());
     }
+    esp32_at_agent_receive(0);
+    if (!esp32_at_agent_response_status())
+    {
+        printf("response: %s", esp32_at_agent_response());
+    }
 
     /* Cold Initial */
     // esp32_at_agent_receive();
@@ -43,7 +48,7 @@ void case2_post()
 
     // esp32_at_agent_send_at(AT_CWMODE("1"));
 
-    // esp32_at_agent_receive();
+    // esp32_at_agent_receive(1);
     // if (!esp32_at_agent_response_status())
     // {
     //     printf("response: %s", esp32_at_agent_response());
