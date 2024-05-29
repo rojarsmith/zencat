@@ -18,6 +18,7 @@
 #define RECV_BUF_SIZE 5
 
 #define FILE_URL_1 "https://bitdove.net/assets/home_hero.png"
+#define FILE_URL_1_LEN 40
 #define FILE_URL_2 "https://bitdove.net/logo/logo_full.svg"
 
 /* AT Command */

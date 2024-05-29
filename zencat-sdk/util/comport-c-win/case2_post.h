@@ -92,6 +92,38 @@ void case2_post()
     if (res_size > 0)
     {
     }
+
+    esp32_at_agent_send_at(AT_HTTPURLCFG);
+
+    esp32_at_agent_receive();
+    if (!esp32_at_agent_response_status())
+    {
+        printf("response: %s", esp32_at_agent_response());
+    }
+
+    esp32_at_agent_send_at(AT_HTTPURLCFG_SET("40"));
+
+    esp32_at_agent_receive();
+    if (!esp32_at_agent_response_status())
+    {
+        printf("response: %s", esp32_at_agent_response());
+    }
+
+    esp32_at_agent_send_at(FILE_URL_1);
+
+    esp32_at_agent_receive();
+    if (!esp32_at_agent_response_status())
+    {
+        printf("response: %s", esp32_at_agent_response());
+    }
+
+    esp32_at_agent_send_at(AT_HTTPURLCFG);
+
+    esp32_at_agent_receive();
+    if (!esp32_at_agent_response_status())
+    {
+        printf("response: %s", esp32_at_agent_response());
+    }
 }
 
 #endif
