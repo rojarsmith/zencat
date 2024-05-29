@@ -83,7 +83,7 @@ int esp32_at_agent_receive(int remove_echo)
         {
             recv_buf[n] = 0; // always put a "null" at the end of a string!
 
-            printf("[received]=====\n");
+            printf("\n[received]=====\n");
             printf("received %i bytes: %s\n", n, (char *)recv_buf);
 
             for (int i = 0; i <= RECV_BUF_SIZE; i++)
@@ -160,14 +160,14 @@ int esp32_at_agent_send_at(const char *cmd)
 {
     send_len = strlen(cmd);
 
-    if (strcmp(cmd, AT_CIPSTA) == 0)
-    {
-#ifdef _WIN32
-        Sleep(1000);
-#else
-        usleep(1000000); // sleep for 1 Second
-#endif
-    }
+    //     if (strcmp(cmd, AT_CIPSTA) == 0)
+    //     {
+    // #ifdef _WIN32
+    //         Sleep(1000);
+    // #else
+    //         usleep(1000000); // sleep for 1 Second
+    // #endif
+    //     }
 
     esp32_at_agent.esp32_status = WAIT_RESPOSE;
     strcpy(send_buf, cmd);
