@@ -74,6 +74,8 @@ int esp32_at_agent_receive(int remove_echo)
 
     while (retry <= RETRY_COUNT)
     {
+        // [bug?]massive receive
+        // `RS232_PollComport segmentation fault`
         n = RS232_PollComport(
             esp32_at_agent.com_port,
             recv_buf,
@@ -193,4 +195,25 @@ int extract_integer(const char *str)
         return value;
     }
     return -1;
+}
+
+int extract_integer2(const char *str)
+{
+    int value = 0;
+    if (sscanf(str, "+HTTPCLIENT:%d,", &value) == 1)
+    {
+        return value;
+    }
+    return -1;
+}
+
+int delay(int milli_second)
+{
+#ifdef _WIN32
+    Sleep(milli_second / 1000);
+    // Sleep(1000);
+#else
+    usleep(milli_second);
+    // usleep(1000000); // sleep for 1 Second
+#endif
 }

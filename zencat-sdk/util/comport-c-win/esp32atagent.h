@@ -14,6 +14,7 @@
 #define AT_HTTPGETSIZE(url) "AT+HTTPGETSIZE=\"" url "\"\r\n"
 #define AT_HTTPURLCFG "AT+HTTPURLCFG?\r\n"
 #define AT_HTTPURLCFG_SET(len) "AT+HTTPURLCFG=" len "\r\n"
+#define AT_HTTPCLIENT(arg) "AT+HTTPCLIENT=" arg "\r\n"
 
 typedef enum
 {
@@ -63,5 +64,9 @@ int esp32_at_agent_response_status();
 int esp32_at_agent_send_at(const char *cmd);
 
 int extract_integer(const char *str);
+
+int extract_integer2(const char *str);
+
+int delay(int milli_second);
 
 #endif

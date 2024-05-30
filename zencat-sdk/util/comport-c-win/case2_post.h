@@ -176,6 +176,41 @@ void case2_post()
     {
         printf("response: %s", esp32_at_agent_response());
     }
+
+    esp32_at_agent_send_at(AT_HTTPCLIENT("2,0,\"\",,,2"));
+    esp32_at_agent_receive(1);
+    if (!esp32_at_agent_response_status())
+    {
+        printf("response: %s", esp32_at_agent_response());
+    }
+    else
+    {
+        printf("response: ...");
+    }
+
+    int total_len = 0;
+    int try_cnt = 0;
+
+    while (try_cnt <= 10)
+    {
+        delay(200000);
+        esp32_at_agent_receive(0);
+        if (!esp32_at_agent_response_status())
+        {
+            res_size = extract_integer2(esp32_at_agent_response());
+            printf("response len2: %d, ", res_size);
+            printf("response total_len: %d\n", total_len);
+            if (res_size > 0)
+            {
+                total_len += res_size;
+            }
+        }
+        else
+        {
+            printf("response: ...");
+            try_cnt++;
+        }
+    }
 }
 
 #endif
