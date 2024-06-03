@@ -24,6 +24,13 @@ typedef enum
 
 typedef enum
 {
+    DOWNLOAD_READ_META,
+    // DOWNLOAD_READ_SIZE,
+    DOWNLOAD_READ_DATA
+} DownloadStatus;
+
+typedef enum
+{
     ESP32_INITIAL_ERROR
 } Esp32Error;
 
@@ -55,7 +62,11 @@ int esp32_at_agent_set_config(
 
 int esp32_at_agent_initial();
 
+int esp32_at_agent_start_download();
+
 int esp32_at_agent_receive(int remove_echo);
+
+int esp32_at_agent_receive_tp();
 
 unsigned char *esp32_at_agent_response();
 

@@ -194,16 +194,13 @@ void case2_post()
     while (try_cnt <= 10)
     {
         delay(200000);
-        esp32_at_agent_receive(0);
-        if (!esp32_at_agent_response_status())
+        int blk_len = esp32_at_agent_receive_tp();
+        if (blk_len > 0)
         {
-            res_size = extract_integer2(esp32_at_agent_response());
-            printf("response len2: %d, ", res_size);
-            printf("response total_len: %d\n", total_len);
-            if (res_size > 0)
-            {
-                total_len += res_size;
-            }
+            printf("response blk_len: %d, ", blk_len);
+            printf("response total_len: %d\n", total_len);      
+
+            total_len += blk_len;
         }
         else
         {
