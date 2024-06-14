@@ -13,8 +13,16 @@ set (PROJECT_INCLUDES
 
 set (PROJECT_DEFINES
     #CASE1_RECEIVE
-    CASE2_POST
+    #CASE2_POST
+    CASE3_SLICE
 )
+
+if("CASE3_SLICE" IN_LIST PROJECT_DEFINES)
+    list(APPEND PROJECT_SOURCES
+        atagent.c
+    )
+endif()
+message("PROJECT_SOURCES=${PROJECT_SOURCES}")
 
 # Check if the header file exists
 if(EXISTS "${CMAKE_SOURCE_DIR}/main_dev.h")

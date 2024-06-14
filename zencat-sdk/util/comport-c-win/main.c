@@ -7,6 +7,9 @@
 #ifdef CASE2_POST
 #include "case2_post.h"
 #endif
+#ifdef CASE3_SLICE
+#include "case3_slice.h"
+#endif
 
 int main()
 {
@@ -15,6 +18,9 @@ int main()
 #endif
 #ifdef CASE2_POST
     case2_post();
+#endif
+#ifdef CASE3_SLICE
+    case3_slice();
 #endif
 
     return 0;
