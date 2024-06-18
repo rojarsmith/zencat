@@ -13,8 +13,16 @@ void case3_slice();
 
 void case3_slice()
 {
-    esp32.hardware = ESP32;
-    set_config_at_agent(&esp32);
+    struct at_agent *e32 = &esp32;
+    e32->h_type = ESP32;
+    e32->com_port = COM_PORT;
+    e32->baud_rate = BAUD_RATE;
+    e32->u_mode = (struct uart_mode *)malloc(sizeof(struct uart_mode));
+    e32->u_mode->data_bits = '8';
+    e32->u_mode->parity = 'N';
+    e32->u_mode->stop_bits = '1';
+    e32->u_mode->flow_ctrl = 0;
+    atag_set_config(e32);
 }
 
 #endif

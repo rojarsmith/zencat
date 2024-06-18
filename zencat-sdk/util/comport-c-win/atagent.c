@@ -1,7 +1,11 @@
 #include <stdio.h>
 #include "atagent.h"
 
-int set_config_at_agent(struct at_agent *agent)
+struct at_agent *at_ag;
+
+int atag_set_config(struct at_agent *agent)
 {
+    at_ag = agent;
+
     return 0;
 }

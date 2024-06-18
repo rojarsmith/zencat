@@ -6,11 +6,24 @@ enum hardware_type
     ESP32,
 };
 
-struct at_agent
+struct uart_mode
 {
-    enum hardware_type hardware;
+    char data_bits;
+    char parity;
+    char stop_bits;
+    int flow_ctrl;
 };
 
-int set_config_at_agent(struct at_agent *agent);
+struct at_agent
+{
+    enum hardware_type h_type;
+    int com_port;
+    int baud_rate;
+    struct uart_mode *u_mode;
+};
+
+extern struct at_agent *at_ag;
+
+int atag_set_config(struct at_agent *agent);
 
 #endif
