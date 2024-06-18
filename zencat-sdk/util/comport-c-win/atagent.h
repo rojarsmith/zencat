@@ -1,7 +1,9 @@
 #ifndef ATAGENT
 #define ATAGENT
 
-#define RECV_BUF_SIZE 2048
+#define RECV_BUF_SIZE 2048 // 4, 6: debug, 2048: ESP32
+#define RESP_BUF_SIZE 2048
+#define RETRY_COUNT 3
 
 enum hardware_type
 {

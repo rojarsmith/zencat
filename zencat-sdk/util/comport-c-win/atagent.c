@@ -5,6 +5,7 @@
 struct at_agent *at_ag;
 
 unsigned char recv_buf[RECV_BUF_SIZE + 1] = {0};
+unsigned char resp_buf[RESP_BUF_SIZE + 1] = {0};
 
 int atag_set_config(struct at_agent *agent)
 {
@@ -36,17 +37,63 @@ int atag_initial()
 
 int atag_receive()
 {
+    int resp_idx = 0;
     int n = 0;
+    int retry = 0;
+    int brk = 0;
 
-    n = RS232_PollComport(
-        at_ag->com_port,
-        recv_buf,
-        RECV_BUF_SIZE);
+    // for (int i = 0; i <= RESP_BUF_SIZE; i++)
+    // {
+    //     resp_buf[RESP_BUF_SIZE + 1] = 0;
+    // }
 
-    if (n > 0)
+    while (retry <= RETRY_COUNT)
     {
-        recv_buf[n] = 0; // always put a "null" at the end of a string!
+        n = RS232_PollComport(
+            at_ag->com_port,
+            recv_buf,
+            RECV_BUF_SIZE);
 
-        printf("[received] %i bytes: %s\n", n, (char *)recv_buf);
+        if (n > 0)
+        {
+            recv_buf[n] = 0; // always put a "null" at the end of a string!
+
+            printf("[received] %i bytes: %s\n", n, (char *)recv_buf);
+
+            for (int i = 0; i < n; i++)
+            {
+                printf("[%02x]", recv_buf[i]);
+                if (i == (n - 1))
+                {
+                    printf("\n");
+                }
+
+                resp_buf[resp_idx] = recv_buf[i];
+                if (resp_buf[resp_idx - 1] == '\r' &&
+                    resp_buf[resp_idx] == '\n' &&
+                    resp_idx != 1)
+                {
+                    resp_buf[resp_idx + 1] = 0;
+                    brk = 1;
+                }
+
+                resp_idx++;
+            }
+        }
+        else
+        {
+#ifdef _WIN32
+            Sleep(1000);
+#else
+            usleep(1000000); /* sleep for 1 Second */
+#endif
+            retry++;
+        }
+
+        if (brk == 1)
+        {
+            printf("[response] %i bytes: %s\n", resp_idx, (char *)resp_buf);
+            break;
+        }
     }
 }
