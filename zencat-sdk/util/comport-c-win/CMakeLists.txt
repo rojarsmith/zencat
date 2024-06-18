@@ -4,7 +4,6 @@ project(comport-c-win VERSION 0.1.0 LANGUAGES C CXX)
 set (PROJECT_SOURCES
     main.c
     rs232.c
-    esp32atagent.c
 )
 
 set (PROJECT_INCLUDES
@@ -17,6 +16,11 @@ set (PROJECT_DEFINES
     CASE3_SLICE
 )
 
+if("CASE2_POST" IN_LIST PROJECT_DEFINES)
+    list(APPEND PROJECT_SOURCES
+        esp32atagent.c
+    )
+endif()
 if("CASE3_SLICE" IN_LIST PROJECT_DEFINES)
     list(APPEND PROJECT_SOURCES
         atagent.c

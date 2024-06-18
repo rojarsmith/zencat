@@ -1,6 +1,8 @@
 #ifndef ATAGENT
 #define ATAGENT
 
+#define RECV_BUF_SIZE 2048
+
 enum hardware_type
 {
     ESP32,
@@ -25,5 +27,9 @@ struct at_agent
 extern struct at_agent *at_ag;
 
 int atag_set_config(struct at_agent *agent);
+
+int atag_initial();
+
+int atag_receive();
 
 #endif

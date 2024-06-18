@@ -23,6 +23,13 @@ void case3_slice()
     e32->u_mode->stop_bits = '1';
     e32->u_mode->flow_ctrl = 0;
     atag_set_config(e32);
+
+    atag_initial();
+
+    while (1)
+    {
+        atag_receive();
+    }
 }
 
 #endif
