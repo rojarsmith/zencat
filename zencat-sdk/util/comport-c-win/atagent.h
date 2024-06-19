@@ -9,7 +9,11 @@
 #define AT_RST "AT+RST"
 #define AT_CWMODE(MODE) "AT+CWMODE=" MODE
 #define AT_CWJAP(NAME, PASSWORD) "AT+CWJAP=\"" NAME "\",\"" PASSWORD "\""
-#define AT_CIPSTA "AT+CIPSTA?\r\n"
+#define AT_CIPSTA "AT+CIPSTA?"
+#define AT_HTTPGETSIZE(URL) "AT+HTTPGETSIZE=\"" URL "\""
+
+#define FILE_URL_1 "https://bitdove.net/assets/home_hero.png"
+#define FILE_URL_1_LEN 40
 
 enum hardware_type
 {

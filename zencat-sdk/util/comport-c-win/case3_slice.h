@@ -42,6 +42,13 @@ void case3_slice()
     wait_response(2);
     wait_response(10);
 
+    atag_send(atag_cmd(AT_CIPSTA));
+    wait_response(2);
+
+    atag_send(atag_cmd(AT_HTTPGETSIZE(FILE_URL_1)));
+    wait_response(10);
+    wait_response(10);
+
     while (1)
     {
         // atag_receive();
