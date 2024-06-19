@@ -1,9 +1,13 @@
 #ifndef ATAGENT
 #define ATAGENT
 
-#define RECV_BUF_SIZE 2048 // 4, 6: debug, 2048: ESP32
+#define SEND_BUF_SIZE 1024
+#define RECV_BUF_SIZE 4 // 4, 6: debug, 2048: ESP32
 #define RESP_BUF_SIZE 2048
 #define RETRY_COUNT 3
+
+#define AT_RST "AT+RST"
+#define AT_CIPSTA "AT+CIPSTA?\r\n"
 
 enum hardware_type
 {
@@ -33,10 +37,14 @@ int atag_set_config(struct at_agent *agent);
 
 int atag_initial();
 
-int atag_receive();
+int atag_receive(int delay_gain);
 
 int atag_get_response_status();
 
 unsigned char *atag_get_response();
+
+unsigned char *atag_cmd(const char *cmd);
+
+int atag_send(const char *cmd);
 
 #endif

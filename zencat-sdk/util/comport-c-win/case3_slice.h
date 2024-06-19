@@ -26,13 +26,27 @@ void case3_slice()
 
     atag_initial();
 
+    unsigned char *cmd = atag_cmd(AT_RST);
+    printf("cmd: %s", cmd);
+    atag_send(cmd);
+    atag_receive(4);
+    if (atag_get_response_status())
+    {
+        printf("response: %s", atag_get_response());
+    }
+    atag_receive(46);
+    if (atag_get_response_status())
+    {
+        printf("response: %s", atag_get_response());
+    }
+
     while (1)
     {
-        atag_receive();
-        if (atag_get_response_status())
-        {
-            printf("response: %s", atag_get_response());
-        }
+        // atag_receive();
+        // if (atag_get_response_status())
+        // {
+        //     printf("response: %s", atag_get_response());
+        // }
     }
 }
 
