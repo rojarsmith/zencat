@@ -7,6 +7,8 @@
 #define RETRY_COUNT 3
 
 #define AT_RST "AT+RST"
+#define AT_CWMODE(MODE) "AT+CWMODE=" MODE
+#define AT_CWJAP(NAME, PASSWORD) "AT+CWJAP=\"" NAME "\",\"" PASSWORD "\""
 #define AT_CIPSTA "AT+CIPSTA?\r\n"
 
 enum hardware_type

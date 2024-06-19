@@ -10,6 +10,7 @@
 struct at_agent esp32;
 
 void case3_slice();
+void wait_response(int delay_gain);
 
 void case3_slice()
 {
@@ -29,16 +30,17 @@ void case3_slice()
     unsigned char *cmd = atag_cmd(AT_RST);
     printf("cmd: %s", cmd);
     atag_send(cmd);
-    atag_receive(4);
-    if (atag_get_response_status())
-    {
-        printf("response: %s", atag_get_response());
-    }
-    atag_receive(46);
-    if (atag_get_response_status())
-    {
-        printf("response: %s", atag_get_response());
-    }
+    wait_response(4);
+    wait_response(46);
+
+    atag_send(atag_cmd(AT_CWMODE("1")));
+    wait_response(2);
+    /* Response Nothing */
+    wait_response(0);
+
+    atag_send(atag_cmd(AT_CWJAP(WIFI_USERNAME, WIFI_PASSWORD)));
+    wait_response(2);
+    wait_response(10);
 
     while (1)
     {
@@ -47,6 +49,19 @@ void case3_slice()
         // {
         //     printf("response: %s", atag_get_response());
         // }
+    }
+}
+
+void wait_response(int delay_gain)
+{
+    atag_receive(delay_gain);
+    if (atag_get_response_status())
+    {
+        printf("response: %s", atag_get_response());
+    }
+    else
+    {
+        printf("response: ...");
     }
 }
 
