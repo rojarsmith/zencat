@@ -41,11 +41,7 @@ int atag_receive()
     int n = 0;
     int retry = 0;
     int brk = 0;
-
-    // for (int i = 0; i <= RESP_BUF_SIZE; i++)
-    // {
-    //     resp_buf[RESP_BUF_SIZE + 1] = 0;
-    // }
+    at_ag->msg_received = 0;
 
     while (retry <= RETRY_COUNT)
     {
@@ -71,7 +67,7 @@ int atag_receive()
                 resp_buf[resp_idx] = recv_buf[i];
                 if (resp_buf[resp_idx - 1] == '\r' &&
                     resp_buf[resp_idx] == '\n' &&
-                    resp_idx != 1)
+                    resp_idx != 1) // Special ACK: "\r\nready\r\n"
                 {
                     resp_buf[resp_idx + 1] = 0;
                     brk = 1;
@@ -92,8 +88,26 @@ int atag_receive()
 
         if (brk == 1)
         {
+            at_ag->msg_received = 1;
             printf("[response] %i bytes: %s\n", resp_idx, (char *)resp_buf);
             break;
         }
     }
+
+    if (brk == 0)
+    {
+        return -1;
+    }
+
+    return resp_idx;
+}
+
+int atag_get_response_status()
+{
+    return at_ag->msg_received;
+}
+
+unsigned char *atag_get_response()
+{
+    return resp_buf;
 }

@@ -24,6 +24,7 @@ struct at_agent
     int com_port;
     int baud_rate;
     struct uart_mode *u_mode;
+    int msg_received;
 };
 
 extern struct at_agent *at_ag;
@@ -33,5 +34,9 @@ int atag_set_config(struct at_agent *agent);
 int atag_initial();
 
 int atag_receive();
+
+int atag_get_response_status();
+
+unsigned char *atag_get_response();
 
 #endif

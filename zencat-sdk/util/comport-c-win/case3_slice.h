@@ -29,6 +29,10 @@ void case3_slice()
     while (1)
     {
         atag_receive();
+        if (atag_get_response_status())
+        {
+            printf("response: %s", atag_get_response());
+        }
     }
 }
 
