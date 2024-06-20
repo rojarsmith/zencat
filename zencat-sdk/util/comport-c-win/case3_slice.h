@@ -10,7 +10,7 @@
 struct at_agent esp32;
 
 void case3_slice();
-void wait_response(int delay_gain);
+unsigned char *wait_response(int delay_gain);
 
 void case3_slice()
 {
@@ -47,29 +47,29 @@ void case3_slice()
 
     atag_send(atag_cmd(AT_HTTPGETSIZE(FILE_URL_1)));
     wait_response(10);
-    wait_response(10);
+    int res_size = extract_integer(wait_response(10));
+    printf("size: %d\n", res_size);
 
     while (1)
     {
-        // atag_receive();
-        // if (atag_get_response_status())
-        // {
-        //     printf("response: %s", atag_get_response());
-        // }
+        wait_response(20);
     }
 }
 
-void wait_response(int delay_gain)
+unsigned char *wait_response(int delay_gain)
 {
     atag_receive(delay_gain);
     if (atag_get_response_status())
     {
         printf("response: %s", atag_get_response());
+        return atag_get_response();
     }
     else
     {
         printf("response: ...");
     }
+
+    return 0;
 }
 
 #endif

@@ -2,7 +2,7 @@
 #define ATAGENT
 
 #define SEND_BUF_SIZE 1024
-#define RECV_BUF_SIZE 4 // 4, 6: debug, 2048: ESP32
+#define RECV_BUF_SIZE 6 // 4, 6: debug, 2048: ESP32
 #define RESP_BUF_SIZE 2048
 #define RETRY_COUNT 3
 
@@ -11,6 +11,8 @@
 #define AT_CWJAP(NAME, PASSWORD) "AT+CWJAP=\"" NAME "\",\"" PASSWORD "\""
 #define AT_CIPSTA "AT+CIPSTA?"
 #define AT_HTTPGETSIZE(URL) "AT+HTTPGETSIZE=\"" URL "\""
+#define AT_HTTPURLCFG "AT+HTTPURLCFG?"
+#define AT_HTTPURLCFG_SET(len) "AT+HTTPURLCFG=" len ""
 
 #define FILE_URL_1 "https://bitdove.net/assets/home_hero.png"
 #define FILE_URL_1_LEN 40
@@ -52,5 +54,7 @@ unsigned char *atag_get_response();
 unsigned char *atag_cmd(const char *cmd);
 
 int atag_send(const char *cmd);
+
+int extract_integer(const char *str);
 
 #endif
