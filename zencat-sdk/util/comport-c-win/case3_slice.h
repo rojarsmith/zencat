@@ -27,6 +27,10 @@ void case3_slice()
 
     atag_initial();
 
+    // Debug
+    // printf("cmd: %s", AT_HTTPURLCFG_SET("40"));
+    // atag_send(atag_cmd(AT_HTTPURLCFG_SET("40")));
+
     unsigned char *cmd = atag_cmd(AT_RST);
     printf("cmd: %s", cmd);
     atag_send(cmd);
@@ -50,9 +54,31 @@ void case3_slice()
     int res_size = extract_integer(wait_response(10));
     printf("size: %d\n", res_size);
 
+    atag_send(atag_cmd(AT_HTTPURLCFG_SET("40")));
+    wait_response(2);
+
+    atag_send(atag_cmd(FILE_URL_1));
+    wait_response(2);
+
+    atag_send(atag_cmd(AT_HTTPURLCFG));
+    wait_response(2);
+
+    atag_send(atag_cmd(AT_HTTPCHEAD("0")));
+    wait_response(2);
+
+    atag_send(atag_cmd(AT_HTTPCHEAD("21")));
+    wait_response(2);
+
+    atag_send(atag_cmd(ARG_RANGE_BYTES("161", "183")));
+    wait_response(2);
+
+    // atag_send(atag_cmd(AT_SYSMSGFILTERCFG("1","","")));
+    atag_send(atag_cmd(AT_HTTPCLIENT("2,0,\"\",,,2")));
+    wait_response(2);
+
     while (1)
     {
-        wait_response(20);
+        wait_response(2);
     }
 }
 
