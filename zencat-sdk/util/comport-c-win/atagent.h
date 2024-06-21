@@ -2,7 +2,7 @@
 #define ATAGENT
 
 #define SEND_BUF_SIZE 1024
-#define RECV_BUF_SIZE 6 // 4, 6: debug, 2048: ESP32
+#define RECV_BUF_SIZE 2048 // 4, 6: debug, 2048: ESP32
 #define RESP_BUF_SIZE 2048
 #define RETRY_COUNT 3
 
@@ -17,6 +17,7 @@
 #define AT_HTTPCLIENT(ARG) "AT+HTTPCLIENT=" ARG
 #define AT_HTTPCHEAD(LEN) "AT+HTTPCHEAD=" LEN
 #define ARG_RANGE_BYTES(BLEN, ELEN) "Range: bytes=" BLEN "-" ELEN
+#define AT_SYSMSGFILTER(LEN) "AT+SYSMSGFILTER=" LEN
 
 #define FILE_URL_1 "https://bitdove.net/assets/home_hero.png"
 #define FILE_URL_1_LEN 40

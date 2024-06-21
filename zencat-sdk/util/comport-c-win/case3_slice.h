@@ -30,6 +30,34 @@ void case3_slice()
     // Debug
     // printf("cmd: %s", AT_HTTPURLCFG_SET("40"));
     // atag_send(atag_cmd(AT_HTTPURLCFG_SET("40")));
+    // unsigned char cmd2[] = "^+HTTPCLIENT:[0-9]*,\r\n$";
+    // atag_cmd("^+HTTPCLIENT:[0-9]*,\r\n$");
+
+    atag_send(atag_cmd("\r\n\r\n\r\n"));
+    wait_response(2);
+    atag_send(atag_cmd("\r\n\r\n\r\n"));
+    wait_response(2);
+    unsigned char cmd2[] = (AT_SYSMSGFILTERCFG("1", "20", "3"));
+    atag_send(atag_cmd(cmd2));
+    wait_response(2);
+    // wait_response(10);
+    unsigned char cmd3[] = "^+HTTPCLIENT:[0-9]*,\r\n$";
+    atag_send(atag_cmd(cmd3));
+    wait_response(2);
+    atag_send(atag_cmd(""));
+    wait_response(10);
+    unsigned char cmd4[] = (AT_SYSMSGFILTERCFG("1", "0", "7"));
+    atag_send(atag_cmd(cmd4));
+    wait_response(2);
+    unsigned char cmd5[] = "\r\nOK\r\n";
+    atag_send(atag_cmd(cmd5));
+    wait_response(2);
+    atag_send(atag_cmd(""));
+    wait_response(10);
+    atag_send(atag_cmd("AT+SYSMSGFILTERCFG?"));
+    wait_response(10);
+    atag_send(atag_cmd("AT+SYSMSGFILTERCFG=0"));
+    wait_response(10);
 
     unsigned char *cmd = atag_cmd(AT_RST);
     printf("cmd: %s", cmd);
@@ -63,6 +91,24 @@ void case3_slice()
     atag_send(atag_cmd(AT_HTTPURLCFG));
     wait_response(2);
 
+    atag_send(atag_cmd("AT+SYSMSGFILTERCFG=0"));
+    wait_response(2);
+
+    atag_send(atag_cmd(AT_SYSMSGFILTERCFG("1", "20", "3")));
+    wait_response(2);
+
+    atag_send(atag_cmd("\"^+HTTPCLIENT:[0-9]*,\r\n$\""));
+    wait_response(10);
+
+    atag_send(atag_cmd(AT_SYSMSGFILTERCFG("1", "0", "7")));
+    wait_response(2);
+
+    atag_send(atag_cmd("\"\r\nOK\r\n$\""));
+    wait_response(10);
+
+    atag_send(atag_cmd(AT_SYSMSGFILTER("1")));
+    wait_response(2);
+
     atag_send(atag_cmd(AT_HTTPCHEAD("0")));
     wait_response(2);
 
@@ -72,9 +118,8 @@ void case3_slice()
     atag_send(atag_cmd(ARG_RANGE_BYTES("161", "183")));
     wait_response(2);
 
-    // atag_send(atag_cmd(AT_SYSMSGFILTERCFG("1","","")));
     atag_send(atag_cmd(AT_HTTPCLIENT("2,0,\"\",,,2")));
-    wait_response(2);
+    wait_response(20);
 
     while (1)
     {
