@@ -159,6 +159,74 @@ void case3_slice()
 
     fclose(file);
 
+    /*
+        File 2
+    */
+    atag_send(atag_cmd("\r\n\r\n\r\n"));
+    wait_response(2);
+
+    file = fopen("file2.png", "ab");
+    if (file == NULL)
+    {
+        perror("Failed to open file");
+        return;
+    }
+
+    // int sections = 386125 / 128;      // 3016
+    // int tail = 386125 - (3016 * 128); // 77
+    int sections = 386125 / 512;     // 754
+    int tail = 386125 - (754 * 512); // 77
+
+    for (int i = 0; i <= 754; i++)
+    {
+        atag_send(atag_cmd("ATE1"));
+        wait_response(2);
+
+        atag_send(atag_cmd(AT_HTTPCHEAD("0")));
+        wait_response(2);
+
+        int bs = 512 * i;
+        int be = 512 * i + 512 - 1;
+        if (i == 754)
+        {
+            be = 512 * i + tail - 1;
+        }
+
+        char rng[100];
+        sprintf(rng, "Range: bytes= %d-%d", bs, be);
+        int rng_len = strlen(rng);
+        char rng_len_str[20];
+        sprintf(rng_len_str, "AT+HTTPCHEAD=%d", rng_len);
+        atag_send(atag_cmd(rng_len_str));
+        wait_response(2);
+        atag_send(atag_cmd(rng));
+        wait_response(2);
+
+        atag_send(atag_cmd("ATE0"));
+        wait_response(2);
+        atag_send(atag_cmd(AT_HTTPCLIENT("2,0,\"\",,,2")));
+        data_raw = wait_response(20);
+        data_len = be - bs + 1;
+        if (data_raw == NULL)
+        {
+            perror("No data");
+            data_raw = wait_response(200);
+            if (data_raw == NULL)
+            {
+                perror("No data again");
+                return;
+            }
+        }
+
+        size_t written = fwrite(data_raw, 1, data_len, file);
+        if (written != data_len)
+        {
+            perror("Failed to write complete data to file");
+        }
+    }
+
+    fclose(file);
+
     while (1)
     {
         wait_response(2);
