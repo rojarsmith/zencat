@@ -2,6 +2,7 @@
 #define CASE3_SLICE_INCLUDED
 
 #include <stdio.h>
+#include <time.h>
 #include <string.h>
 #include "main.h"
 #include "rs232.h"
@@ -10,6 +11,8 @@
 struct at_agent esp32;
 
 void case3_slice();
+void slicing_1();
+
 unsigned char *wait_response(int delay_gain);
 
 void case3_slice()
@@ -58,6 +61,8 @@ void case3_slice()
     // wait_response(10);
     // atag_send(atag_cmd("AT+SYSMSGFILTERCFG=0"));
     // wait_response(10);
+
+    slicing_1();
 
     unsigned char *cmd = atag_cmd(AT_RST);
     printf("cmd: %s", cmd);
@@ -231,6 +236,75 @@ void case3_slice()
     {
         wait_response(2);
     }
+}
+
+void slicing_1()
+{
+    clock_t start;
+    clock_t end;
+    start = clock();
+
+    unsigned char *file_name = "file_1.png";
+    FILE *file;
+    unsigned char *data_raw;
+    size_t data_len;
+
+    remove(file_name);
+
+    file = fopen(file_name, "ab");
+    if (file == NULL)
+    {
+        perror("Failed to open file");
+        return;
+    }
+
+    int res_len = 386125;
+    int sli_len = 512;
+    int sections = res_len / sli_len;          // 754
+    int tail = res_len - (sections * sli_len); // 77
+
+    atag_send(atag_cmd("ATE1"));
+    wait_response(2);
+
+    atag_send(atag_cmd(AT_HTTPCHEAD("0")));
+    wait_response(2);
+
+    int bs = 386100;
+    int be = 386125;
+    char rng[100];
+    sprintf(rng, "Range: bytes=%d-%d", bs, be);
+    int rng_len = strlen(rng);
+    char rng_len_str[30];
+    sprintf(rng_len_str, "AT+HTTPCHEAD=%d", rng_len);
+    int rng_len_str_len = strlen(rng_len_str);
+    rng_len_str[rng_len_str_len] = '\r';
+    rng_len_str[rng_len_str_len + 1] = '\n';
+    rng_len_str[rng_len_str_len + 2] = '\0';
+    atag_send(rng_len_str);
+    wait_response(2);
+    atag_send(rng);
+    wait_response(2);
+    atag_send(atag_cmd("AT+HTTPCHEAD?"));
+    wait_response(2);
+
+    atag_send(atag_cmd("ATE0"));
+    wait_response(2);
+    atag_send(atag_cmd(AT_HTTPCLIENT("2,0,\"\",,,2")));
+    data_raw = wait_response(20);
+    data_len = be - bs + 1;
+
+    size_t written = fwrite(data_raw, 1, data_len, file);
+
+    for (int i = 0; i <= sections; i++)
+    {
+    }
+
+    fclose(file);
+
+    end = clock();
+    double diff = end - start; // ms
+    printf("Time: %f  ms", diff);
+    printf(" %f  sec", diff / CLOCKS_PER_SEC);
 }
 
 unsigned char *wait_response(int delay_gain)
