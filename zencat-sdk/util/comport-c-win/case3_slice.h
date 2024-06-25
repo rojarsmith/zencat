@@ -249,57 +249,72 @@ void slicing_1()
     unsigned char *data_raw;
     size_t data_len;
 
-    remove(file_name);
-
-    file = fopen(file_name, "ab");
-    if (file == NULL)
+    if (remove(file_name) == 0)
     {
-        perror("Failed to open file");
-        return;
+        printf("Deleted successfully");
+    }
+    else
+    {
+        printf("Unable to delete the file");
     }
 
     int res_len = 386125;
-    int sli_len = 512;
-    int sections = res_len / sli_len;          // 754
-    int tail = res_len - (sections * sli_len); // 77
-
-    atag_send(atag_cmd("ATE1"));
-    wait_response(2);
-
-    atag_send(atag_cmd(AT_HTTPCHEAD("0")));
-    wait_response(2);
-
-    int bs = 386100;
-    int be = 386125;
-    char rng[100];
-    sprintf(rng, "Range: bytes=%d-%d", bs, be);
-    int rng_len = strlen(rng);
-    char rng_len_str[30];
-    sprintf(rng_len_str, "AT+HTTPCHEAD=%d", rng_len);
-    int rng_len_str_len = strlen(rng_len_str);
-    rng_len_str[rng_len_str_len] = '\r';
-    rng_len_str[rng_len_str_len + 1] = '\n';
-    rng_len_str[rng_len_str_len + 2] = '\0';
-    atag_send(rng_len_str);
-    wait_response(2);
-    atag_send(rng);
-    wait_response(2);
-    atag_send(atag_cmd("AT+HTTPCHEAD?"));
-    wait_response(2);
-
-    atag_send(atag_cmd("ATE0"));
-    wait_response(2);
-    atag_send(atag_cmd(AT_HTTPCLIENT("2,0,\"\",,,2")));
-    data_raw = wait_response(20);
-    data_len = be - bs + 1;
-
-    size_t written = fwrite(data_raw, 1, data_len, file);
+    int sli_len = 2048;                        // 65536, 512
+    int sections = res_len / sli_len;          // 5    , 754
+    int tail = res_len - (sections * sli_len); // 58445, 77
 
     for (int i = 0; i <= sections; i++)
     {
-    }
+        file = fopen(file_name, "ab");
+        if (file == NULL)
+        {
+            perror("Failed to open file");
+            return;
+        }
 
-    fclose(file);
+        atag_send(atag_cmd("ATE1"));
+        wait_response(2);
+
+        atag_send(atag_cmd(AT_HTTPCHEAD("0")));
+        wait_response(2);
+
+        int bs = sli_len * i;
+        int be = bs + sli_len - 1;
+        if (i == sections)
+        {
+            be = sli_len * i + tail - 1;
+        }
+        char rng[100];
+        sprintf(rng, "Range: bytes=%d-%d", bs, be);
+        int rng_len = strlen(rng);
+        char rng_len_str[30];
+        sprintf(rng_len_str, "AT+HTTPCHEAD=%d", rng_len);
+        int rng_len_str_len = strlen(rng_len_str);
+        rng_len_str[rng_len_str_len] = '\r';
+        rng_len_str[rng_len_str_len + 1] = '\n';
+        rng_len_str[rng_len_str_len + 2] = '\0';
+        atag_send(rng_len_str);
+        wait_response(2);
+        atag_send(rng);
+        wait_response(2);
+        atag_send(atag_cmd("AT+HTTPCHEAD?"));
+        wait_response(2);
+
+        atag_send(atag_cmd("ATE0"));
+        wait_response(2);
+        atag_send(atag_cmd(AT_HTTPCLIENT("2,0,\"\",,,2")));
+        data_raw = wait_response(20);
+        data_len = be - bs + 1;
+        if (data_raw == NULL)
+        {
+            perror("No data");
+        }
+
+        size_t written = fwrite(data_raw, 1, data_len, file);
+
+        fclose(file);
+        int dbg = 0;
+    }
 
     end = clock();
     double diff = end - start; // ms
