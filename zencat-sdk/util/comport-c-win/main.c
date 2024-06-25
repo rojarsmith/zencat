@@ -10,6 +10,9 @@
 #ifdef CASE3_SLICE
 #include "case3_slice.h"
 #endif
+#ifdef CASE4_SLICE2
+#include "case4_slice2.h"
+#endif
 
 int main()
 {
@@ -21,6 +24,9 @@ int main()
 #endif
 #ifdef CASE3_SLICE
     case3_slice();
+#endif
+#ifdef CASE4_SLICE2
+    case4_slice2();
 #endif
 
     return 0;
