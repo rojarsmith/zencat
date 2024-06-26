@@ -31,6 +31,7 @@ endif()
 if("CASE4_SLICE2" IN_LIST PROJECT_DEFINES)
     list(APPEND PROJECT_SOURCES
         at.c
+        at_cmd.c
     )
 endif()
 message("PROJECT_SOURCES=${PROJECT_SOURCES}")

@@ -2,7 +2,7 @@
 #define AT_H
 
 #define SEND_BUF_SIZE 1024
-#define RECV_BUF_SIZE 4 // 4, 6: debug, 2048: ESP32
+#define RECV_BUF_SIZE 1024 // 4, 6: debug, 2048: ESP32
 #define RESP_BUF_SIZE 2048
 #define RETRY_COUNT 3
 
@@ -41,5 +41,11 @@ int atag_receive(int delay_gain);
 int atag_parse(const char *response);
 
 int atag_send(const char *cmd);
+
+int atag_get_response_status();
+
+unsigned char *atag_get_response();
+
+unsigned char *atag_cmd(const char *cmd, const char *pars);
 
 #endif

@@ -4,10 +4,14 @@
 #include <stdio.h>
 #include "rs232.h"
 #include "at.h"
+#include "at_cmd.h"
 
 struct at_agent esp32;
 
 void case4_slice2();
+void story_fetch_passthrough();
+
+unsigned char *wait_response(int delay_gain);
 
 void case4_slice2()
 {
@@ -28,11 +32,48 @@ void case4_slice2()
 
     atag_initial();
 
+    story_fetch_passthrough();
+
+    return;
+
     while (1)
     {
         int resp_l = atag_receive(2);
         printf("[response] len %d .\n", resp_l);
     }
+}
+
+void story_fetch_passthrough()
+{
+    char *cmd = atag_cmd(AT_RESTORE, "?=");
+    printf("[cmd]%s", cmd);
+
+    atag_send(atag_cmd("\r\n\r\n\r\n", ""));
+    wait_response(2);
+
+    // atag_send(atag_cmd(AT_RESTORE));
+    wait_response(2);
+
+    // atag_send(atag_cmd(AT_CWMODE("1")));
+    wait_response(2);
+
+    int dbg = 0;
+}
+
+unsigned char *wait_response(int delay_gain)
+{
+    atag_receive(delay_gain);
+    if (atag_get_response_status())
+    {
+        printf("response: %s", atag_get_response());
+        return atag_get_response();
+    }
+    else
+    {
+        printf("response: ...");
+    }
+
+    return NULL;
 }
 
 #endif

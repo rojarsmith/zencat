@@ -107,7 +107,8 @@ int atag_parse(const char *response)
 {
     const char *pattern_ready =
         "("
-        "\r\nready\r\n"
+        "\r\nOK\r\n"
+        "|\r\nready\r\n"
         "|WIFI CONNECTED\r\n"
         ")";
     regex_t regex;
@@ -128,7 +129,6 @@ int atag_parse(const char *response)
 
     while (start < len && regexec(&regex, response + start, nmatch, matchptr, 0) == 0)
     {
-        // printf("[REG]Match at position %d\n", start + matchptr[0].rm_so);
         printf("[REG]Match at position %d - %d\n", matchptr[0].rm_so, matchptr[0].rm_eo);
         for (int i = matchptr[0].rm_so; i < matchptr[0].rm_eo; i++)
         {
@@ -142,4 +142,76 @@ int atag_parse(const char *response)
     regfree(&regex);
 
     return match_cnt;
+}
+
+unsigned char *atag_cmd(const char *cmd, const char *pars)
+{
+    const char *suffix = "\r\n";
+    size_t input_len = strlen(cmd);
+    size_t suffix_len = strlen(suffix);
+    size_t pars_len = strlen(pars);
+
+    size_t malloc_len = 0;
+    if (pars_len >= 1)
+    {
+        malloc_len = input_len + suffix_len + 1 + pars_len;
+    }
+    else
+    {
+        malloc_len = input_len + suffix_len + 1;
+    }
+
+    char *result = (char *)malloc(malloc_len);
+    if (result == NULL)
+    {
+        printf("Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
+
+    strcpy(result, cmd);
+    if (pars_len >= 1)
+    {
+        strcat(result, pars);
+    }
+    strcat(result, suffix);
+
+    return result;
+}
+
+int atag_send(const char *cmd)
+{
+    int send_len = 0;
+    send_len = strlen(cmd);
+
+    strcpy(send_buf, cmd);
+    RS232_cputs(at_ag->com_port, send_buf);
+
+    if (strcmp(cmd, "") == 0)
+    {
+#ifdef _WIN32
+        Sleep(200);
+#else
+        usleep(200000); // sleep for 0.2 Second
+#endif
+    }
+    else
+    {
+#ifdef _WIN32
+        Sleep(200);
+#else
+        usleep(200000); // sleep for 0.1 Second
+#endif
+    }
+
+    return 0;
+}
+
+int atag_get_response_status()
+{
+    return at_ag->msg_received;
+}
+
+unsigned char *atag_get_response()
+{
+    return resp_buf;
 }
