@@ -7,6 +7,7 @@ set (PROJECT_SOURCES
 )
 
 set (PROJECT_INCLUDES
+    C:/msys64/ucrt64/include
     .
 )
 
@@ -27,6 +28,11 @@ if("CASE3_SLICE" IN_LIST PROJECT_DEFINES)
         atagent.c
     )
 endif()
+if("CASE4_SLICE2" IN_LIST PROJECT_DEFINES)
+    list(APPEND PROJECT_SOURCES
+        at.c
+    )
+endif()
 message("PROJECT_SOURCES=${PROJECT_SOURCES}")
 
 # Check if the header file exists
@@ -43,6 +49,10 @@ add_compile_definitions (${PROJECT_DEFINES})
 include_directories (${PROJECT_INCLUDES})
 
 add_executable(comport-c-win ${PROJECT_SOURCES})
+
+if("CASE4_SLICE2" IN_LIST PROJECT_DEFINES)
+    target_link_libraries(comport-c-win regex)
+endif()
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
