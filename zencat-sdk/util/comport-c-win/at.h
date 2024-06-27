@@ -42,10 +42,14 @@ int atag_parse(const char *response);
 
 int atag_send(const char *cmd);
 
+int atag_send_bytes(unsigned char *cmd, int length);
+
 int atag_get_response_status();
 
 unsigned char *atag_get_response();
 
 unsigned char *atag_cmd(const char *cmd, const char *pars);
+
+int extract_integer(const char *str);
 
 #endif

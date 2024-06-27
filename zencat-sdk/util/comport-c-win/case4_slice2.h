@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include "rs232.h"
+#include "main.h"
 #include "at.h"
 #include "at_cmd.h"
 
@@ -51,10 +52,62 @@ void story_fetch_passthrough()
     atag_send(atag_cmd("\r\n\r\n\r\n", ""));
     wait_response(2);
 
-    // atag_send(atag_cmd(AT_RESTORE));
+    atag_send(atag_cmd(AT_RESTORE, ""));
+    wait_response(2);
     wait_response(2);
 
-    // atag_send(atag_cmd(AT_CWMODE("1")));
+    atag_send(atag_cmd(AT_CWMODE, "=1"));
+    wait_response(2);
+
+    char pars[200] = {0};
+    sprintf(pars, "=\"%s\",\"%s\"", WIFI_USERNAME, WIFI_PASSWORD);
+    atag_send(atag_cmd(AT_CWJAP, pars));
+    wait_response(2);
+    wait_response(50);
+
+    sprintf(pars, "=\"%s\"", FILE_URL_10);
+    atag_send(atag_cmd(AT_HTTPGETSIZE, pars));
+    wait_response(2);
+    int res_size = extract_integer(wait_response(20));
+    printf("Res size: %d\n", res_size);
+
+    atag_send(atag_cmd("AT+SYSMSGFILTERCFG", "=1,20,3"));
+    // wait_response(2);
+
+    unsigned char pars2[200] = {0};
+    sprintf(pars2, "^+HTTPCLIENT:[0-9]*,\r\n$");
+    atag_send_bytes(pars2, 23);
+    // atag_send("^+HTTPCLIENT:[0-9]*,\r\n$");
+    wait_response(2);
+
+    // pars2[0] = '\r';
+    // atag_send_bytes(pars2, 1);
+
+    // atag_send(atag_cmd("", ""));
+    // wait_response(2);
+
+    atag_send(atag_cmd("AT+SYSMSGFILTERCFG", "?"));
+    wait_response(2);
+
+    atag_send(atag_cmd("AT+SYSMSGFILTERCFG", "=1,0,7"));
+    wait_response(2);
+
+    sprintf(pars2, "\r\nOK\r\n$");
+    atag_send_bytes(pars2, 7);
+    wait_response(2);
+
+    atag_send(atag_cmd("", ""));
+    wait_response(2);
+
+    atag_send(atag_cmd("AT+SYSMSGFILTERCFG", "?"));
+    wait_response(2);
+
+    atag_send(atag_cmd("AT+SYSMSGFILTER", "=1"));
+    wait_response(2);
+    wait_response(2);
+
+    atag_send(atag_cmd("ATE0", ""));
+    wait_response(2);
     wait_response(2);
 
     int dbg = 0;
