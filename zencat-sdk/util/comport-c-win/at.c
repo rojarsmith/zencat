@@ -104,6 +104,52 @@ int atag_receive(int delay_gain)
     return resp_idx;
 }
 
+int atag_receive_bin()
+{
+    printf("[begin]receive\n");
+
+    int resp_idx = 0;
+    int n = 0;
+    int retry = 0;
+    at_ag->msg_received = 0;
+
+    n = RS232_PollComport(
+        at_ag->com_port,
+        recv_buf,
+        RECV_BUF_SIZE);
+
+    if (n > 0)
+    {
+        recv_buf[n] = 0; // always put a "null" at the end of a string!
+
+        printf("[received] %i bytes: %s\n", n, (char *)recv_buf);
+
+        for (int i = 0; i < n; i++)
+        {
+            printf("[%02x]", recv_buf[i]);
+            (i == (n - 1)) ? printf("\n") : 0;
+
+            resp_buf[resp_idx] = recv_buf[i];
+            resp_idx++;
+        }
+    }
+
+    if (resp_idx >= 1)
+    {
+        at_ag->msg_received = 1;
+        resp_buf[resp_idx] = 0;
+        printf("[response] %i bytes: %s\n", resp_idx, (char *)resp_buf);
+        // Debug
+        for (int i = 0; i <= resp_idx; i++)
+        {
+            printf("[%02x]", resp_buf[i]);
+            (i == (resp_idx)) ? printf("\n") : 0;
+        }
+    }
+
+    return resp_idx;
+}
+
 int atag_parse(const char *response)
 {
     const char *pattern_ready =
@@ -247,13 +293,23 @@ int atag_send_bytes(unsigned char *cmd, int length)
         for (int i = 0; i < poss_cnt; i++)
         {
             sprintf(tmp, "\r");
-            atag_send_bytes(tmp, 1);
+            RS232_SendBuf(at_ag->com_port, tmp, 1);
+#ifdef _WIN32
+            Sleep(200);
+#else
+            usleep(200000); // sleep for 0.1 Second
+#endif
             sprintf(tmp, "\n");
-            atag_send_bytes(tmp, 1);
+            RS232_SendBuf(at_ag->com_port, tmp, 1);
+#ifdef _WIN32
+            Sleep(200);
+#else
+            usleep(200000); // sleep for 0.1 Second
+#endif
 
             if (i < (poss_cnt - 1)) // not tail
             {
-                status = RS232_SendBuf(at_ag->com_port, cmd + poss[i] + 2, poss[i + 1] - 1);
+                status = RS232_SendBuf(at_ag->com_port, cmd + poss[i] + 2, poss[i + 1] - poss[i] - 2);
             }
             else if (i == (poss_cnt - 1)) // tail
             {

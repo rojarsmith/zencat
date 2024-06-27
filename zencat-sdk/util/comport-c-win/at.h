@@ -1,8 +1,8 @@
 #ifndef AT_H
 #define AT_H
 
-#define SEND_BUF_SIZE 1024
-#define RECV_BUF_SIZE 1024 // 4, 6: debug, 2048: ESP32
+#define SEND_BUF_SIZE 2048
+#define RECV_BUF_SIZE 2048 // 4, 6: debug, 2048: ESP32
 #define RESP_BUF_SIZE 2048
 #define RETRY_COUNT 3
 
@@ -37,6 +37,8 @@ int atag_set_config(struct at_agent *agent);
 int atag_initial();
 
 int atag_receive(int delay_gain);
+
+int atag_receive_bin();
 
 int atag_parse(const char *response);
 
