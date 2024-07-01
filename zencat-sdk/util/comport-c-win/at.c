@@ -37,6 +37,13 @@ int atag_initial()
     return 0;
 }
 
+int atag_close()
+{
+    RS232_CloseComport(at_ag->com_port);
+    printf("[SYS]Close COM Port Success\n");
+    return 0;
+}
+
 int atag_receive(int delay_gain)
 {
     printf("[begin]receive\n");

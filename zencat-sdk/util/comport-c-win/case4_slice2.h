@@ -46,6 +46,8 @@ void case4_slice2()
     printf("Time: %f  ms", diff);
     printf(" %f  sec", diff / CLOCKS_PER_SEC);
 
+    atag_close();
+
     return;
 
     while (1)

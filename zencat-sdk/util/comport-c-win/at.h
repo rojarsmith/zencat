@@ -36,6 +36,8 @@ int atag_set_config(struct at_agent *agent);
 
 int atag_initial();
 
+int atag_close();
+
 int atag_receive(int delay_gain);
 
 int atag_receive_bin();
