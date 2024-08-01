@@ -23,6 +23,34 @@ with open("config.properties", "r+b") as f:
     hawkbit_username = p.properties.get("hawkbit.username")
     hawkbit_password = p.properties.get("hawkbit.password")
 
+
+class ReqMethod:
+    GET = "GET"
+    PUT = "PUT"
+
+
+def fetch(conn, method, url, body=None, headers=None):
+    parsed_json = None
+    try:
+        conn.request(method, url, body=body, headers=headers)
+        response = conn.getresponse()
+        data = response.read()
+        json_data = data.decode('utf-8')
+        parsed_json = json.loads(json_data)
+    except Exception as e:
+        msg = f"An error occurred: {e}"
+        print(msg)
+    finally:
+        conn.close()
+    
+    return parsed_json
+
+
+def print_fjson(parsed_json):
+    formatted_json = json.dumps(parsed_json, indent=4)
+    print(formatted_json)
+
+
 def test_single_device():
     print(hawkbit_domain)
     print(hawkbit_username)
@@ -35,43 +63,21 @@ def test_single_device():
         "Authorization": f"Basic {auth}"
     }
 
-    try:
-        conn.request("GET", url, headers=headers)
-        response = conn.getresponse()
-        data = response.read()
-        print(data)
-        json_data = data.decode('utf-8')
-        parsed_json = json.loads(json_data)
-        formatted_json = json.dumps(parsed_json, indent=4)
-        print(formatted_json)
-        value = parsed_json.get("value")
+    parsed_json = fetch(conn, ReqMethod.GET, url, headers=headers)
+    print_fjson(parsed_json)
+    value = parsed_json.get("value")
+    if value != True:
+        url = "/rest/v1/system/configs/authentication.targettoken.enabled/"
+        body = json.dumps({"value": True})
+        parsed_json = fetch(conn, ReqMethod.PUT, url, body=body, headers=headers)
+        print_fjson(parsed_json)
 
-        if value != True:
-            url = "/rest/v1/system/configs/authentication.targettoken.enabled/"
-            data = json.dumps({"value": True})
-            conn.request("PUT", url, body=data, headers=headers)
-            response = conn.getresponse()
-            data = response.read()
-            json_data = data.decode('utf-8')
-            parsed_json = json.loads(json_data)
-            formatted_json = json.dumps(parsed_json, indent=4)
-            print(formatted_json)
+    url = "/rest/v1/system/configs/authentication.gatewaytoken.enabled/"
+    parsed_json = fetch(conn, ReqMethod.GET, url, headers=headers)
+    print_fjson(parsed_json)
+    value = parsed_json.get("value")
+    print(f"value={value}")
 
-        url = "/rest/v1/system/configs/authentication.gatewaytoken.enabled/"
-        conn.request("GET", url, headers=headers)
-        response = conn.getresponse()
-        data = response.read()
-        print(data)
-        json_data = data.decode('utf-8')
-        parsed_json = json.loads(json_data)
-        formatted_json = json.dumps(parsed_json, indent=4)
-        print(formatted_json)
-        value = parsed_json.get("value")
-
-    except Exception as e:
-        print(f"An error occurred: {e}")
-    finally:
-        conn.close()
 
 if __name__ == "__main__":
     test_single_device()
