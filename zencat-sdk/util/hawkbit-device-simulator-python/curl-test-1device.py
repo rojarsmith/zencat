@@ -22,6 +22,9 @@ with open("config.properties", "r+b") as f:
         hawkbit_domain = hawkbit_domain[len("https://"):]
     hawkbit_username = p.properties.get("hawkbit.username")
     hawkbit_password = p.properties.get("hawkbit.password")
+    hawkbit_gatewaysecuritytoken = p.properties.get("hawkbit.gateway-security-token")
+    hawkbit_devicetargetid = p.properties.get("hawkbit.device-target-id")
+    hawkbit_devicesecuritytoken = p.properties.get("hawkbit.device-security-token")
 
 
 class ReqMethod:
@@ -77,6 +80,24 @@ def test_single_device():
     print_fjson(parsed_json)
     value = parsed_json.get("value")
     print(f"value={value}")
+    if value != True:
+        url = "/rest/v1/system/configs/authentication.gatewaytoken.enabled/"
+        body = json.dumps({"value": True})
+        parsed_json = fetch(conn, ReqMethod.PUT, url, body=body, headers=headers)
+        print_fjson(parsed_json)
+
+    url = "/rest/v1/system/configs/authentication.gatewaytoken.key/"
+    body = json.dumps({"value": hawkbit_gatewaysecuritytoken})
+    parsed_json = fetch(conn, ReqMethod.PUT, url, body=body, headers=headers)
+    print_fjson(parsed_json)
+
+    url = f"/rest/v1/targets/{hawkbit_devicetargetid}"
+    parsed_json = fetch(conn, ReqMethod.GET, url, headers=headers)
+    print_fjson(parsed_json)
+    
+
+    
+    
 
 
 if __name__ == "__main__":
