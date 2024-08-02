@@ -4,6 +4,7 @@ from jproperties import Properties
 import http.client
 import base64
 import json
+import re
 
 os_name = platform.system()
 
@@ -23,6 +24,7 @@ with open("config.properties", "r+b") as f:
     hawkbit_username = p.properties.get("hawkbit.username")
     hawkbit_password = p.properties.get("hawkbit.password")
     hawkbit_gatewaysecuritytoken = p.properties.get("hawkbit.gateway-security-token")
+    global hawkbit_devicetargetid 
     hawkbit_devicetargetid = p.properties.get("hawkbit.device-target-id")
     hawkbit_devicesecuritytoken = p.properties.get("hawkbit.device-security-token")
 
@@ -30,6 +32,7 @@ with open("config.properties", "r+b") as f:
 class ReqMethod:
     GET = "GET"
     PUT = "PUT"
+    POST = "POST"
 
 
 def fetch(conn, method, url, body=None, headers=None):
@@ -54,10 +57,35 @@ def print_fjson(parsed_json):
     print(formatted_json)
 
 
+def get_next_devicetargetid(input_string):
+    match = re.search(r'(\D*)(\d+)', input_string)
+    if match:
+        prefix = match.group(1)
+        nd = int(match.group(2)) + 1
+        formatted_number = f"{nd:02}"
+        return prefix + formatted_number
+    return input_string
+    # match = re.search(r'\d+', input_string)
+    # nd = 0
+    # if match:
+    #     nd = int(match.group(0))
+    # nd += 1
+    # formatted_number = f"{nd:02}"
+    # return formatted_number
+
+def get_num_devicetargetid(input_string):
+    match = re.search(r'\d+', input_string)
+    nd = 0
+    if match:
+        nd = int(match.group(0))    
+    return nd
+
+
 def test_single_device():
     print(hawkbit_domain)
     print(hawkbit_username)
     print(hawkbit_password)
+    print(hawkbit_devicetargetid)
     auth = base64.b64encode(f"{hawkbit_username}:{hawkbit_password}".encode()).decode()
     conn = http.client.HTTPSConnection(hawkbit_domain)
     url = "/rest/v1/system/configs/authentication.targettoken.enabled/"
@@ -91,14 +119,32 @@ def test_single_device():
     parsed_json = fetch(conn, ReqMethod.PUT, url, body=body, headers=headers)
     print_fjson(parsed_json)
 
-    url = f"/rest/v1/targets/{hawkbit_devicetargetid}"
-    parsed_json = fetch(conn, ReqMethod.GET, url, headers=headers)
+    devicetargetid = hawkbit_devicetargetid
+    devicetargetid_found = False
+
+    while devicetargetid_found == False:
+        url = f"/rest/v1/targets/{devicetargetid}"
+        parsed_json = fetch(conn, ReqMethod.GET, url, headers=headers)
+        print_fjson(parsed_json)
+        if "errorCode" in parsed_json:
+            error_code = parsed_json.get("errorCode")
+            print(f"errorCode={error_code}")
+            if "entitiyNotFound" in error_code:
+                devicetargetid_found = True
+            else:
+                sys.exit(1)
+        else:               
+            devicetargetid = get_next_devicetargetid(devicetargetid)
+    
+    num_devicetargetid = get_num_devicetargetid(devicetargetid)
+
+    url = "/rest/v1/targets"
+    body = json.dumps([{"controllerId": devicetargetid,
+                       "name": f"EDevice {num_devicetargetid}",
+                       "description": f"Emu device {num_devicetargetid}",
+                       "securityToken": hawkbit_devicesecuritytoken}])
+    parsed_json = fetch(conn, ReqMethod.POST, url, body=body, headers=headers)
     print_fjson(parsed_json)
-    
-
-    
-    
-
 
 if __name__ == "__main__":
     test_single_device()
