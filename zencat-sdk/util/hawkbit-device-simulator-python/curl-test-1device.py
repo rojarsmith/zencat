@@ -35,14 +35,18 @@ class ReqMethod:
     POST = "POST"
 
 
-def fetch(conn, method, url, body=None, headers=None):
+def fetch(conn, method, url, body=None, headers=None, no_rep=False):
     parsed_json = None
     try:
         conn.request(method, url, body=body, headers=headers)
         response = conn.getresponse()
         data = response.read()
-        json_data = data.decode('utf-8')
-        parsed_json = json.loads(json_data)
+        if data == b'' and response.code == 200:
+            json_data = data.decode('utf-8')
+            parsed_json = json.loads("{}")    
+        else:
+            json_data = data.decode('utf-8')
+            parsed_json = json.loads(json_data)
     except Exception as e:
         msg = f"An error occurred: {e}"
         print(msg)
@@ -145,6 +149,24 @@ def test_single_device():
                        "securityToken": hawkbit_devicesecuritytoken}])
     parsed_json = fetch(conn, ReqMethod.POST, url, body=body, headers=headers)
     print_fjson(parsed_json)
+
+    url = f"/DEFAULT/controller/v1/{devicetargetid}"
+    headers = {
+        "Authorization": f"TargetToken {hawkbit_devicesecuritytoken}"
+    }
+    parsed_json = fetch(conn, ReqMethod.GET, url, headers=headers)
+    print_fjson(parsed_json)
+
+    url = f"/DEFAULT/controller/v1/{devicetargetid}/configData"
+    headers = {
+        "Authorization": f"TargetToken {hawkbit_devicesecuritytoken}",
+        "Content-Type": "application/json"
+    }
+    body = json.dumps({"mode": "merge",
+                       "data": {"PN": "BD01", "HWRev": "1.0"}})
+    parsed_json = fetch(conn, ReqMethod.PUT, url, body=body, headers=headers)
+    print_fjson(parsed_json)
+    
 
 if __name__ == "__main__":
     test_single_device()
