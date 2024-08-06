@@ -386,7 +386,23 @@ def test_single_device():
                            "execution": "proceeding",
                            "details": ["The update is being processed."]
                        }})
-    conn.request(ReqMethod.POST, url, headers=headers, body=body)
+    parsed_json = fetch(conn, ReqMethod.POST, url, headers=headers, body=body, no_rep=True)
+
+
+    url = f"/DEFAULT/controller/v1/{devicetargetid}/deploymentBase/{action_id}/feedback"
+    headers = {
+        "Authorization": f"TargetToken {hawkbit_devicesecuritytoken}",
+        "Content-Type": "application/json;charset=UTF-8"
+    }
+    body = json.dumps({"id": action_id,
+                       "status": {
+                           "result": {
+                               "finished": "success"
+                           },
+                           "execution": "closed",
+                           "details": ["The update was successfully installed."]
+                       }})
+    parsed_json = fetch(conn, ReqMethod.POST, url, headers=headers, body=body, no_rep=True)
 
 
 if __name__ == "__main__":
