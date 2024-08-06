@@ -1,10 +1,13 @@
+import os
 import sys
 import platform
 from jproperties import Properties
 import http.client
+import mimetypes
 import base64
 import json
 import re
+import uuid
 
 os_name = platform.system()
 
@@ -166,7 +169,87 @@ def test_single_device():
                        "data": {"PN": "BD01", "HWRev": "1.0"}})
     parsed_json = fetch(conn, ReqMethod.PUT, url, body=body, headers=headers)
     print_fjson(parsed_json)
+
+    url = "/rest/v1/softwaremodules"
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": f"Basic {auth}"
+    }
+    body = json.dumps([{"vendor": "Bitdove Ltd.",
+                       "name": f"BitdoveOS {num_devicetargetid}",
+                       "description": "First version of BitdoveOS.",
+                       "type": "os",
+                       "version": "1.0"}])
+    parsed_json = fetch(conn, ReqMethod.POST, url, body=body, headers=headers)
+    print_fjson(parsed_json)
+    soft_module_id = parsed_json[0].get("id")
+    print(f"soft_module_id={soft_module_id}")
+
+    url = "/rest/v1/softwaremodules?q=name==BitdoveOS*"
+    print(url)
+    parsed_json = fetch(conn, ReqMethod.GET, url, headers=headers)
+    print_fjson(parsed_json)
+
+    url = f"/rest/v1/softwaremodules?q=id=={soft_module_id}"
+    print(url)
+    parsed_json = fetch(conn, ReqMethod.GET, url, headers=headers)
+    print_fjson(parsed_json)
     
+    text_to_write = "This is a test update file."
+    file_name = f"artifact{num_devicetargetid}.txt"
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    file_path = os.path.join(script_dir, file_name)
+    with open(file_path, 'w') as file:
+        file.write(text_to_write)
+    print(f"Gen={file_path}")
+    file_size = os.path.getsize(file_path)
+
+    url = f"/rest/v1/softwaremodules/{soft_module_id}/artifacts"
+    # Not Support
+
+    # headers = {
+    #     "Content-Type": "application/octet-stream",
+    #     "Content-Disposition": 'attachement; filename="{file_name}"',
+    #     "Content-Length": str(file_size),
+    #     "Authorization": f"Basic {auth}"
+    # }
+    # conn.request(ReqMethod.POST, url, headers=headers)
+    # with open(file_path, 'rb') as file:
+    #     conn.send(file.read())
+    # response = conn.getresponse()
+    # data = response.read()
+    # json_data = data.decode('utf-8')
+    # parsed_json = json.loads(json_data)
+    # print_fjson(parsed_json)
+
+    # body = json.dumps([{"controllerId": devicetargetid,
+    #                    "name": f"EDevice {num_devicetargetid}",
+    #                    "description": f"Emu device {num_devicetargetid}",
+    #                    "securityToken": hawkbit_devicesecuritytoken}])
+    
+    # Work fine
+
+    # hash = str(uuid.uuid4())
+    boundary = f"----WebKitFormBoundary{str(uuid.uuid4())}"
+    headers = {
+        'Content-Type': f"multipart/form-data; boundary={boundary}",
+        "Authorization": f"Basic {auth}"
+    }
+    with open(file_path, 'rb') as file:
+        file_content = file.read()
+    body = (
+        f"--{boundary}\r\n"
+        f'Content-Disposition: form-data; name="file"; filename="{file_name}"\r\n'
+        f"Content-Type: Content-Type: text/plain\r\n"
+        "\r\n"
+        f"{file_content.decode('utf-8')}\r\n"
+        f'--{boundary}--\r\n'
+    )
+    parsed_json = fetch(conn, ReqMethod.POST, url, body=body, headers=headers)
+    print_fjson(parsed_json)
+    artifact_id = parsed_json.get("id")
+    print(f"artifact_id={artifact_id}")
+
 
 if __name__ == "__main__":
     test_single_device()
