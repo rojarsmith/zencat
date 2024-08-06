@@ -283,6 +283,11 @@ def test_single_device():
     distribution_id = parsed_json[0].get("id")
     print(f"distribution_id={distribution_id}")
 
+    url = f"/rest/v1/distributionsets/{distribution_id}/assignedSM"
+    body = json.dumps([{"id": soft_module_id}])
+    parsed_json = fetch(conn, ReqMethod.POST, url, body=body, headers=headers, no_rep=True)
+    print(f"Assigning a Software Module Success")
+
 
 if __name__ == "__main__":
     test_single_device()
