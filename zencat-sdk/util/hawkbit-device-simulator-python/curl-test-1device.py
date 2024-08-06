@@ -250,6 +250,24 @@ def test_single_device():
     artifact_id = parsed_json.get("id")
     print(f"artifact_id={artifact_id}")
 
+    url = f"/rest/v1/softwaremodules/{soft_module_id}/artifacts/{artifact_id}/download"
+    headers = {
+        "Authorization": f"Basic {auth}"
+    }
+    conn.request("GET", url, headers=headers)
+    response = conn.getresponse()
+    if response.status == 200:
+        file_content = response.read()
+        file_name = f"artifact{num_devicetargetid}-test.txt"    
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        file_path = os.path.join(script_dir, file_name)
+        with open(file_path, 'wb') as file:
+            file.write(file_content)    
+        print(f"Dw={file_path}")
+    else:
+        print(f"Dw failed, code={response.status}, res={response.reason}")
+        sys.exit(1)
+
 
 if __name__ == "__main__":
     test_single_device()
