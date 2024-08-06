@@ -288,6 +288,18 @@ def test_single_device():
     parsed_json = fetch(conn, ReqMethod.POST, url, body=body, headers=headers, no_rep=True)
     print(f"Assigning a Software Module Success")
 
+    url = f"/rest/v1/distributionsets/{distribution_id}/assignedTargets/"
+    headers = {
+        "Content-Type": "application/hal+json;charset=UTF-8",
+        "Authorization": f"Basic {auth}"
+    }
+    body = json.dumps([{"id": devicetargetid,
+                       "type": "forced"}])
+    parsed_json = fetch(conn, ReqMethod.POST, url, body=body, headers=headers)
+    print_fjson(parsed_json)
+    assigned = parsed_json.get("assigned")
+    print(f"assigned={assigned}")
+
 
 if __name__ == "__main__":
     test_single_device()
