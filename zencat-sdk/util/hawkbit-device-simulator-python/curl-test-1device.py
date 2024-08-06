@@ -326,6 +326,24 @@ def test_single_device():
         sys.exit(1)
     print(f"action_code={action_code}")
 
+    url = f"/DEFAULT/controller/v1/{devicetargetid}"
+    headers = {
+        "Authorization": f"TargetToken {hawkbit_devicesecuritytoken}",
+        "Content-Type": "application/json"
+    }
+    parsed_json = fetch(conn, ReqMethod.GET, url, headers=headers)
+    print_fjson(parsed_json)
+
+    url = f"/DEFAULT/controller/v1/{devicetargetid}/deploymentBase/{action_id}?c={action_code}"
+    headers = {
+        "Authorization": f"TargetToken {hawkbit_devicesecuritytoken}",
+        "Content-Type": "application/json"
+    }
+    parsed_json = fetch(conn, ReqMethod.GET, url, headers=headers)
+    print_fjson(parsed_json)
+    links_href = parsed_json.get("deployment").get("chunks")[0].get("artifacts")[0].get("_links").get("download-http").get("href")
+    print_fjson(links_href)
+
 
 if __name__ == "__main__":
     test_single_device()
