@@ -344,6 +344,31 @@ def test_single_device():
     links_href = parsed_json.get("deployment").get("chunks")[0].get("artifacts")[0].get("_links").get("download-http").get("href")
     print_fjson(links_href)
 
+    url = f"/DEFAULT/controller/v1/{devicetargetid}/softwaremodules/{soft_module_id}/artifacts/artifact{num_devicetargetid}.txt"
+    headers = {
+        "Authorization": f"TargetToken {hawkbit_devicesecuritytoken}",
+    }
+    conn.request("GET", url, headers=headers)
+    response = conn.getresponse()
+    if response.status == 200:
+        file_content = response.read()
+        file_name = f"artifact{num_devicetargetid}-dw.txt"    
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        file_path = os.path.join(script_dir, file_name)
+        with open(file_path, 'wb') as file:
+            file.write(file_content)    
+        print(f"Dw={file_path}")
+    else:
+        print(f"Dw failed, code={response.status}, res={response.reason}")
+        sys.exit(1)
+    with open(file_path, 'rb') as file:
+        file_content = file.read()
+    if file_content.decode('utf-8') == "This is a test update file.":
+        print("DW content correct.")
+    else:
+        print(f"Dw content error.")
+        sys.exit(1)
+
 
 if __name__ == "__main__":
     test_single_device()
