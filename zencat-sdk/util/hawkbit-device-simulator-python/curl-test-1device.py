@@ -267,6 +267,21 @@ def test_single_device():
     else:
         print(f"Dw failed, code={response.status}, res={response.reason}")
         sys.exit(1)
+    
+    url = "/rest/v1/distributionsets"
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": f"Basic {auth}"
+    }
+    body = json.dumps([{"requiredMigrationStep": False,
+                       "name": f"DistOS {num_devicetargetid}",
+                       "description": "First distribution.",
+                       "type": "os_app",
+                       "version": "1.0"}])
+    parsed_json = fetch(conn, ReqMethod.POST, url, body=body, headers=headers)
+    print_fjson(parsed_json)
+    distribution_id = parsed_json[0].get("id")
+    print(f"distribution_id={distribution_id}")
 
 
 if __name__ == "__main__":
