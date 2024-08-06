@@ -8,6 +8,7 @@ import base64
 import json
 import re
 import uuid
+import urllib.parse
 
 os_name = platform.system()
 
@@ -299,6 +300,31 @@ def test_single_device():
     print_fjson(parsed_json)
     assigned = parsed_json.get("assigned")
     print(f"assigned={assigned}")
+    action_id = parsed_json.get("assignedActions")[0].get("id")
+    print(f"action_id={action_id}")
+
+    url = f"/DEFAULT/controller/v1/{devicetargetid}"
+    headers = {
+        "Authorization": f"TargetToken {hawkbit_devicesecuritytoken}",
+        "Content-Type": "application/json"
+    }
+    parsed_json = fetch(conn, ReqMethod.GET, url, headers=headers)
+    print_fjson(parsed_json)
+    links_href = parsed_json.get("_links").get("deploymentBase").get("href")
+    print(f"links_href={links_href}")
+    parsed_url = urllib.parse.urlparse(links_href)
+    path_parts = parsed_url.path.split('/')
+    if path_parts[-1] == str(action_id):
+        query_params = urllib.parse.parse_qs(parsed_url.query)
+        if 'c' in query_params:
+            action_code = query_params['c'][0]
+        else:
+            print(f"No action code.")
+            sys.exit(1)
+    else:
+        print(f"action_id error.")
+        sys.exit(1)
+    print(f"action_code={action_code}")
 
 
 if __name__ == "__main__":
