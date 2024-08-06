@@ -348,7 +348,7 @@ def test_single_device():
     headers = {
         "Authorization": f"TargetToken {hawkbit_devicesecuritytoken}",
     }
-    conn.request("GET", url, headers=headers)
+    conn.request(ReqMethod.GET, url, headers=headers)
     response = conn.getresponse()
     if response.status == 200:
         file_content = response.read()
@@ -368,6 +368,25 @@ def test_single_device():
     else:
         print(f"Dw content error.")
         sys.exit(1)
+
+    url = f"/DEFAULT/controller/v1/{devicetargetid}/deploymentBase/{action_id}/feedback"
+    headers = {
+        "Authorization": f"TargetToken {hawkbit_devicesecuritytoken}",
+        "Content-Type": "application/json;charset=UTF-8"
+    }
+    body = json.dumps({"id": action_id,
+                       "status": {
+                           "result": {
+                               "progress": {
+                                   "cnt": 2,
+                                   "of": 5
+                               },
+                               "finished": "none"
+                           },
+                           "execution": "proceeding",
+                           "details": ["The update is being processed."]
+                       }})
+    conn.request(ReqMethod.POST, url, headers=headers, body=body)
 
 
 if __name__ == "__main__":
